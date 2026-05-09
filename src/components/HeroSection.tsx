@@ -5,17 +5,17 @@ import { ChevronDown } from 'lucide-react';
 
 export default function HeroSection() {
   return (
-    <div id="hero" className="relative h-[100dvh] bg-[#050505] text-white font-sans overflow-hidden flex flex-col p-4 md:p-6 lg:p-8">
+    <div id="hero" className="relative h-[100dvh] bg-[#050505] text-white font-sans overflow-hidden flex flex-col p-3 md:p-6 lg:p-8">
       {/* Ambient Glow / Light Leaks */}
       <div className="absolute top-[-10%] left-1/4 w-1/2 h-[50vh] bg-white/5 blur-[120px] rounded-full pointer-events-none" />
       <div className="absolute bottom-[-10%] right-1/4 w-1/2 h-[50vh] bg-white/5 blur-[120px] rounded-full pointer-events-none" />
 
       {/* Background Video Frame Start */}
       <motion.div 
-        initial={{ opacity: 0, borderRadius: "48px", scale: 0.93 }}
-        animate={{ opacity: 1, borderRadius: "24px", scale: 1 }}
+        initial={{ opacity: 0, borderRadius: "32px", scale: 0.93 }}
+        animate={{ opacity: 1, borderRadius: "20px", scale: 1 }}
         transition={{ duration: 1.5, ease: "easeOut" }}
-        className="relative w-full flex-1 overflow-hidden rounded-[24px] shadow-[0_0_80px_rgba(255,255,255,0.07)] border border-white/10 z-10"
+        className="relative w-full flex-1 overflow-hidden rounded-[20px] md:rounded-[24px] shadow-[0_0_80px_rgba(255,255,255,0.07)] border border-white/10 z-10"
       >
         <video
           autoPlay
@@ -36,12 +36,12 @@ export default function HeroSection() {
             initial={{ opacity: 0, scale: 0.9, filter: 'blur(10px)' }}
             animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
             transition={{ duration: 2, ease: "easeOut", delay: 0.3 }}
-            className="w-full px-[1%] flex flex-row justify-center gap-[clamp(0.5rem,2vw,30px)] items-baseline mix-blend-difference"
+            className="w-full px-3 flex flex-col md:flex-row justify-center gap-0 md:gap-[clamp(0.5rem,2vw,30px)] items-center md:items-baseline mix-blend-difference"
           >
-            <span className="font-playfair text-[clamp(1rem,10vw,113.92px)] md:text-[clamp(2.5rem,8vw,113.92px)] font-semibold uppercase text-white tracking-widest whitespace-nowrap">
+            <span className="font-playfair text-[clamp(2.8rem,15vw,5rem)] md:text-[clamp(2.5rem,8vw,113.92px)] font-semibold uppercase text-white tracking-[0.08em] md:tracking-widest whitespace-nowrap leading-none">
               Producer
             </span>
-            <span className="font-playfair text-[clamp(1rem,10vw,113.92px)] md:text-[clamp(2.5rem,8vw,113.92px)] font-semibold uppercase text-white tracking-widest whitespace-nowrap">
+            <span className="font-playfair text-[clamp(2.8rem,15vw,5rem)] md:text-[clamp(2.5rem,8vw,113.92px)] font-semibold uppercase text-white tracking-[0.08em] md:tracking-widest whitespace-nowrap leading-none">
               Ujay
             </span>
           </motion.div>
@@ -52,7 +52,7 @@ export default function HeroSection() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1, delay: 1.5 }}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center z-20 cursor-pointer pointer-events-auto"
+          className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center z-[60] cursor-pointer pointer-events-auto"
           onClick={() => document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' })}
         >
           <motion.div
@@ -66,6 +66,7 @@ export default function HeroSection() {
         </motion.div>
       </motion.div>
       {/* Background Video Frame End */}
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 h-40 bg-gradient-to-b from-transparent via-black/85 to-black" />
     </div>
   );
 }

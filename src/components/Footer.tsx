@@ -4,7 +4,7 @@ import { motion } from 'motion/react';
 
 export default function Footer() {
   return (
-    <footer className="bg-black py-16 px-6 md:px-12 lg:px-[120px] w-full border-t border-white/10 overflow-hidden">
+    <footer className="bg-black py-12 md:py-16 px-5 md:px-12 lg:px-[120px] w-full border-t border-white/10 overflow-hidden">
       <motion.div 
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -33,7 +33,7 @@ export default function Footer() {
           <h4 className="text-white font-medium mb-1 md:mb-2">Navigation</h4>
           <a href="#hero" onClick={(e) => { e.preventDefault(); document.getElementById('hero')?.scrollIntoView({ behavior: 'smooth' }); }} className="text-white/72 hover:text-white transition-colors duration-300 text-sm">Home</a>
           <a href="#about" onClick={(e) => { e.preventDefault(); document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' }); }} className="text-white/72 hover:text-white transition-colors duration-300 text-sm">About Me</a>
-          <a href="#connect" onClick={(e) => { e.preventDefault(); document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' }); }} className="text-white/72 hover:text-white transition-colors duration-300 text-sm">Connect</a>
+          <a href="#connect" onClick={(e) => { e.preventDefault(); document.getElementById('connect')?.scrollIntoView({ behavior: 'smooth' }); }} className="text-white/72 hover:text-white transition-colors duration-300 text-sm">Connect</a>
         </div>
 
         {/* Socials */}

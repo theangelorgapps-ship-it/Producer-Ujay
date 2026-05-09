@@ -1,8 +1,8 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, type ReactNode } from "react";
 import { motion, useInView } from "motion/react";
 import { Youtube, Instagram, Twitter, Linkedin } from "lucide-react";
 
-function TextReveal({ children, delay = 0 }: { children: React.ReactNode, delay?: number }) {
+function TextReveal({ children, delay = 0 }: { children: ReactNode, delay?: number }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-10%" });
 
@@ -67,7 +67,7 @@ function SocialStats() {
   }
 
   return (
-    <div className="flex flex-row items-center gap-8 mt-6">
+    <div className="flex flex-row flex-wrap items-center gap-6 md:gap-8 mt-6">
       {stats.map((stat, idx) => (
         <a 
           key={idx} 
@@ -88,11 +88,11 @@ export default function AboutSection() {
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
-    <section id="about" className="bg-black text-white py-24 px-6 sm:px-10 lg:px-20 min-h-screen flex items-center relative z-10 w-full overflow-hidden">
-      <div className="max-w-[1400px] mx-auto w-full flex flex-col md:flex-row gap-12 lg:gap-24 items-center">
+    <section id="about" className="bg-black text-white py-16 md:py-24 px-5 sm:px-10 lg:px-20 min-h-screen flex items-center relative z-10 w-full overflow-hidden">
+      <div className="max-w-[1400px] mx-auto w-full flex flex-col md:flex-row gap-8 md:gap-12 lg:gap-24 items-center">
         
         {/* Left Column - Image */}
-        <div className="w-full md:w-[35%] rounded-[2rem] overflow-hidden shrink-0 mt-8 md:mt-0">
+        <div className="w-full max-w-[420px] md:max-w-none md:w-[35%] rounded-[1.5rem] md:rounded-[2rem] overflow-hidden shrink-0 mt-6 md:mt-0">
           <motion.img 
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
@@ -100,7 +100,7 @@ export default function AboutSection() {
             transition={{ duration: 1, ease: "easeOut" }}
             src="https://assets.cdn.filesafe.space/uUwEUa6rp4Gx1NEi2KiM/media/69fd324bfb9074ae036bc76d.jpg" 
             alt="Producer Ujay"
-            className="w-full aspect-[4/5] md:aspect-[3/4] object-cover rounded-[2rem]"
+            className="w-full aspect-[4/5] max-h-[68vh] md:max-h-none md:aspect-[3/4] object-cover rounded-[1.5rem] md:rounded-[2rem]"
           />
         </div>
 
@@ -111,12 +111,12 @@ export default function AboutSection() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-10%" }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="font-playfair text-4xl md:text-5xl lg:text-6xl font-light mb-8 bg-gradient-to-r from-gray-100 via-gray-300 to-gray-500 bg-clip-text text-transparent py-2 leading-tight tracking-tight"
+            className="font-playfair text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-light mb-5 md:mb-8 bg-gradient-to-r from-gray-100 via-gray-300 to-gray-500 bg-clip-text text-transparent py-2 leading-tight tracking-tight"
           >
             About Producer Ujay
           </motion.h2>
 
-          <div className="text-gray-100 text-lg md:text-[1.15rem] leading-[1.8] font-normal tracking-wide space-y-6">
+          <div className="text-gray-100 text-base md:text-[1.15rem] leading-[1.7] md:leading-[1.8] font-normal tracking-wide space-y-5 md:space-y-6">
             <TextReveal delay={0.1}>
               <p>
                 Producer Ujay is a remarkable young entrepreneur and YouTube creator on a mission to inspire minds globally. By interviewing the world’s most accomplished millionaires and building a multi-faceted empire including PlutoCat and Influencer Hub, Ujay provides the blueprint for the next generation to win faster and at scale.
@@ -164,14 +164,14 @@ export default function AboutSection() {
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 1, delay: 0.5 }}
-            className="pt-10 flex flex-col items-start gap-4"
+            className="pt-8 md:pt-10 flex flex-col items-start gap-4"
           >
             {/* Logo Below the Text */}
             <div className="flex items-center -ml-2 mb-2">
               <img 
                 src="https://assets.cdn.filesafe.space/uUwEUa6rp4Gx1NEi2KiM/media/69fba3434ef91f2f59351fb8.png" 
                 alt="PU Logo" 
-                className="w-48 h-auto object-contain opacity-90 sepia-[.2]" 
+                className="w-36 md:w-48 h-auto object-contain opacity-90 sepia-[.2]" 
               />
             </div>
             

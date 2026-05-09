@@ -1,14 +1,48 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import { X } from 'lucide-react';
+import { Volume2, VolumeX, X } from 'lucide-react';
+
+const advertiseVideoUrl = 'https://assets.cdn.filesafe.space/uUwEUa6rp4Gx1NEi2KiM/media/69fead25a7b9e0385a1a1053.mp4';
+const collabVideoUrl = 'https://assets.cdn.filesafe.space/uUwEUa6rp4Gx1NEi2KiM/media/69feaeeea3dd25aa2abc9256.mp4';
+const modalInputClass = 'bg-white border border-gray-200 rounded-lg px-4 py-3 text-gray-950 placeholder:text-gray-400 focus:outline-none focus:border-[#0B2551] focus:ring-2 focus:ring-[#A4F4FD]/40 transition-shadow';
+const modalLabelClass = 'text-sm font-semibold text-gray-700';
+const modalHeadingClass = 'font-display text-[clamp(1.15rem,5vw,2rem)] italic font-normal leading-none text-black whitespace-nowrap';
+
+function PopupVideo({ src, title }: { src: string; title: string }) {
+  const [muted, setMuted] = useState(true);
+
+  return (
+    <div className="relative overflow-hidden rounded-xl md:rounded-2xl border border-gray-200 bg-gray-100 shadow-sm">
+      <video
+        src={src}
+        title={title}
+        autoPlay
+        muted={muted}
+        loop
+        playsInline
+        className="aspect-video w-full bg-black object-cover"
+      />
+      <button
+        type="button"
+        onClick={() => setMuted((current) => !current)}
+        aria-label={muted ? 'Turn video sound on' : 'Turn video sound off'}
+        className="absolute bottom-3 right-3 md:bottom-4 md:right-4 inline-flex h-10 w-10 md:h-11 md:w-11 items-center justify-center rounded-full border border-white/70 bg-black/55 text-white shadow-lg backdrop-blur transition hover:bg-black/75"
+      >
+        {muted ? <VolumeX className="h-5 w-5" /> : <Volume2 className="h-5 w-5" />}
+      </button>
+    </div>
+  );
+}
 
 export default function PricingSection() {
   const [yearly, setYearly] = useState(false);
   const [showAdvertiseForm, setShowAdvertiseForm] = useState(false);
   const [showConnectForm, setShowConnectForm] = useState(false);
+  const modalRoot = typeof document === 'undefined' ? null : document.body;
   
   return (
-    <section id="connect" className="c3-section relative w-full overflow-hidden min-h-screen flex flex-col items-center py-[40px] px-[20px]">
+    <section id="connect" className="c3-section relative w-full overflow-hidden min-h-screen flex flex-col items-center py-8 md:py-[40px] px-4 md:px-[20px]">
       <style>{`
         .c3-section {
           background-color: #000;
@@ -227,9 +261,16 @@ export default function PricingSection() {
           }
           .c3-grid {
             grid-template-columns: 1fr;
-            margin-top: 80px;
+            margin-top: 56px;
             gap: 32px;
             max-width: 450px;
+          }
+          .c3-card {
+            min-height: 0;
+            border-radius: 22px;
+          }
+          .c3-card:hover {
+            transform: none;
           }
           .c3-btn-gold-large {
             padding: 14px 32px;
@@ -258,7 +299,7 @@ export default function PricingSection() {
             <div className="absolute top-[-10%] left-[30%] w-[40%] aspect-square rounded-full border border-[rgba(212,175,55,0.2)]"></div>
           </div>
 
-          <div className="flex-1 w-full flex items-end justify-center px-4 md:px-6 pt-16 pb-4 relative z-10 gap-2 md:gap-3 min-h-[340px]">
+          <div className="flex-1 w-full flex items-end justify-center px-4 md:px-6 pt-14 md:pt-16 pb-4 relative z-10 gap-2 md:gap-3 min-h-[280px] md:min-h-[340px]">
             {/* Pillar 1: LinkedIn */}
             <div className="flex flex-col items-center justify-end h-full w-full relative">
               <div className="absolute top-[-36px] bg-white rounded-md p-1.5 shadow-lg shadow-black/50">
@@ -310,20 +351,20 @@ export default function PricingSection() {
             </div>
           </div>
 
-          <div className="px-6 md:px-8 pb-10 pt-6 relative z-10 bg-gradient-to-t from-black/80 to-transparent flex-1 flex flex-col justify-end">
-            <h3 className="text-2xl md:text-[32px] font-bold text-white mb-3 md:mb-4 tracking-tight leading-tight">8M+ Followers Gained Organically</h3>
+          <div className="px-5 md:px-8 pb-8 md:pb-10 pt-5 md:pt-6 relative z-10 bg-gradient-to-t from-black/80 to-transparent flex-1 flex flex-col justify-end">
+            <h3 className="text-[1.65rem] md:text-[32px] font-bold text-white mb-3 md:mb-4 tracking-tight leading-tight">8M+ Followers Gained Organically</h3>
             <p className="text-[#d8d8d8] text-sm md:text-base leading-relaxed max-w-[300px]">Across YouTube, Instagram, and more - powered by our organic growth engine.</p>
           </div>
         </div>
 
         {/* Card 2 */}
         <div className="c3-card relative overflow-hidden group" style={{ padding: '0', display: 'flex', flexDirection: 'column' }}>
-          <div className="flex-1 w-full flex flex-col justify-center p-0 relative z-10 m-0 overflow-hidden">
-             <img src="https://assets.cdn.filesafe.space/uUwEUa6rp4Gx1NEi2KiM/media/69fe8969e4086e455f864122.png" alt="Ticket" className="w-full object-cover drop-shadow-2xl group-hover:scale-105 transition-transform duration-700" style={{ transformStyle: 'preserve-3d' }} />
+          <div className="w-full aspect-[4/3] md:flex-1 md:aspect-auto flex flex-col justify-center p-0 relative z-10 m-0 overflow-hidden">
+             <img src="https://assets.cdn.filesafe.space/uUwEUa6rp4Gx1NEi2KiM/media/69fe8969e4086e455f864122.png" alt="Ticket" className="h-full w-full object-cover drop-shadow-2xl group-hover:scale-105 transition-transform duration-700" style={{ transformStyle: 'preserve-3d' }} />
           </div>
 
-          <div className="px-6 md:px-8 pb-10 pt-6 relative z-10 bg-gradient-to-t from-black/80 to-transparent flex-1 flex flex-col justify-end items-start border-t border-transparent">
-            <h3 className="text-2xl md:text-[32px] font-bold text-white mb-3 md:mb-4 tracking-tight leading-tight">Advertise with Producer Ujay</h3>
+          <div className="px-5 md:px-8 pb-8 md:pb-10 pt-5 md:pt-6 relative z-10 bg-gradient-to-t from-black/80 to-transparent flex-1 flex flex-col justify-end items-start border-t border-transparent">
+            <h3 className="text-[1.65rem] md:text-[32px] font-bold text-white mb-3 md:mb-4 tracking-tight leading-tight">Advertise with Producer Ujay</h3>
             <p className="text-[#d8d8d8] text-sm md:text-base leading-relaxed max-w-[300px] mb-6">From Cape Town to London - designed for experience, information, and connections.</p>
             <button onClick={() => setShowAdvertiseForm(true)} className="c3-btn-gold"><span>Advertise</span></button>
           </div>
@@ -331,69 +372,74 @@ export default function PricingSection() {
 
         {/* Card 3 */}
         <div className="c3-card relative overflow-hidden group" style={{ padding: '0', display: 'flex', flexDirection: 'column' }}>
-          <div className="flex-1 w-full flex flex-col justify-center p-0 relative z-10 m-0 overflow-hidden">
-             <img src="https://assets.cdn.filesafe.space/uUwEUa6rp4Gx1NEi2KiM/media/69fe8df66ca44fd334adbd41.png" alt="Community" className="w-full object-cover drop-shadow-2xl group-hover:scale-105 transition-transform duration-700" style={{ transformStyle: 'preserve-3d' }} />
+          <div className="w-full aspect-[4/3] md:flex-1 md:aspect-auto flex flex-col justify-center p-0 relative z-10 m-0 overflow-hidden">
+             <img src="https://assets.cdn.filesafe.space/uUwEUa6rp4Gx1NEi2KiM/media/69fe8df66ca44fd334adbd41.png" alt="Community" className="h-full w-full object-cover drop-shadow-2xl group-hover:scale-105 transition-transform duration-700" style={{ transformStyle: 'preserve-3d' }} />
           </div>
 
-          <div className="px-6 md:px-8 pb-10 pt-6 relative z-10 bg-gradient-to-t from-black/80 to-transparent flex-1 flex flex-col justify-end items-start border-t border-transparent">
-            <h3 className="text-2xl md:text-[32px] font-bold text-white mb-3 md:mb-4 tracking-tight leading-tight">Connect on the Community</h3>
+          <div className="px-5 md:px-8 pb-8 md:pb-10 pt-5 md:pt-6 relative z-10 bg-gradient-to-t from-black/80 to-transparent flex-1 flex flex-col justify-end items-start border-t border-transparent">
+            <h3 className="text-[1.65rem] md:text-[32px] font-bold text-white mb-3 md:mb-4 tracking-tight leading-tight">Connect on the Community</h3>
             <p className="text-[#d8d8d8] text-sm md:text-base leading-relaxed max-w-[300px] mb-6">Join our exclusive network - designed for experience, information, and connections.</p>
             <a href="https://uuweua6rp4gx1nei2kim.app.clientclub.net/" target="_blank" rel="noopener noreferrer" className="c3-btn-gold"><span>Join Now</span></a>
           </div>
         </div>
       </div>
 
-      <div className="mt-16 z-10 relative flex justify-center pb-20">
+      <div className="mt-12 md:mt-16 z-10 relative flex justify-center pb-16 md:pb-20">
         <button onClick={() => setShowConnectForm(true)} className="c3-btn-gold-large shadow-[0_0_40px_rgba(212,175,55,0.4)]"><span>Collab With Producer Ujay</span></button>
       </div>
 
-      {/* Advertise Popup */}
-      <AnimatePresence>
-        {showAdvertiseForm && (
+      {modalRoot && createPortal(
+        <>
+          {/* Advertise Popup */}
+          <AnimatePresence>
+            {showAdvertiseForm && (
           <>
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setShowAdvertiseForm(false)}
-              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100]"
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[9997]"
             />
             <motion.div
-              initial={{ y: "100%" }}
-              animate={{ y: 0 }}
-              exit={{ y: "100%" }}
+              initial={{ x: 100, y: "100%" }}
+              animate={{ x: 0, y: 0 }}
+              exit={{ x: 100, y: "100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="fixed bottom-0 left-0 w-full z-[101] bg-[#111] border-t border-[#d4af37]/30 rounded-t-3xl max-h-[90vh] overflow-y-auto"
+              className="fixed bottom-0 left-0 w-full z-[9998] bg-white text-gray-950 border-t border-[#A4F4FD]/50 rounded-t-[1.35rem] md:rounded-t-3xl max-h-[92vh] md:max-h-[90vh] overflow-y-auto shadow-[0_-24px_80px_rgba(0,0,0,0.35)]"
             >
-              <div className="max-w-2xl mx-auto p-6 md:p-10">
-                <div className="flex justify-between items-center mb-8">
-                  <h3 className="text-3xl font-playfair font-bold bg-gradient-to-r from-[#d4af37] to-[#e5b955] bg-clip-text text-transparent">Advertise With Us</h3>
-                  <button onClick={() => setShowAdvertiseForm(false)} className="p-2 rounded-full bg-white/5 hover:bg-white/10 text-white transition-colors">
-                    <X className="w-6 h-6" />
+              <div className="max-w-2xl mx-auto p-4 sm:p-5 md:p-10">
+                <div className="flex justify-between items-center gap-2 sm:gap-3 mb-5 md:mb-8">
+                  <h3 className={modalHeadingClass}>Advertise with Producer Ujay</h3>
+                  <button onClick={() => setShowAdvertiseForm(false)} aria-label="Close advertise form" className="shrink-0 p-1.5 md:p-2 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-950 transition-colors">
+                    <X className="w-5 h-5 md:w-6 md:h-6" />
                   </button>
                 </div>
-                <form className="flex flex-col gap-5">
+                <div className="mb-6 md:mb-8">
+                  <PopupVideo src={advertiseVideoUrl} title="Advertise with Producer Ujay video" />
+                </div>
+                <form className="flex flex-col gap-4 md:gap-5">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div className="flex flex-col gap-2">
-                      <label className="text-sm text-white/70">First Name</label>
-                      <input type="text" className="bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#d4af37]/50" placeholder="John" />
+                      <label className={modalLabelClass}>First Name</label>
+                      <input type="text" className={modalInputClass} placeholder="John" />
                     </div>
                     <div className="flex flex-col gap-2">
-                      <label className="text-sm text-white/70">Last Name</label>
-                      <input type="text" className="bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#d4af37]/50" placeholder="Doe" />
+                      <label className={modalLabelClass}>Last Name</label>
+                      <input type="text" className={modalInputClass} placeholder="Doe" />
                     </div>
                   </div>
                   <div className="flex flex-col gap-2">
-                    <label className="text-sm text-white/70">Email Address</label>
-                    <input type="email" className="bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#d4af37]/50" placeholder="john@company.com" />
+                    <label className={modalLabelClass}>Email Address</label>
+                    <input type="email" className={modalInputClass} placeholder="john@company.com" />
                   </div>
                   <div className="flex flex-col gap-2">
-                    <label className="text-sm text-white/70">Company / Brand</label>
-                    <input type="text" className="bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#d4af37]/50" placeholder="Your Brand Name" />
+                    <label className={modalLabelClass}>Company / Brand</label>
+                    <input type="text" className={modalInputClass} placeholder="Your Brand Name" />
                   </div>
                   <div className="flex flex-col gap-2">
-                    <label className="text-sm text-white/70">Message / Goals</label>
-                    <textarea className="bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#d4af37]/50 min-h-[120px]" placeholder="Tell us about your advertising goals..."></textarea>
+                    <label className={modalLabelClass}>Message / Goals</label>
+                    <textarea className={`${modalInputClass} min-h-[120px]`} placeholder="Tell us about your advertising goals..."></textarea>
                   </div>
                   <button type="button" onClick={(e) => { e.preventDefault(); setShowAdvertiseForm(false); }} className="c3-btn-gold mt-4 w-full md:w-auto self-end">
                     <span>Submit Request</span>
@@ -402,55 +448,58 @@ export default function PricingSection() {
               </div>
             </motion.div>
           </>
-        )}
-      </AnimatePresence>
+            )}
+          </AnimatePresence>
 
-      {/* Connect / Collab Popup */}
-      <AnimatePresence>
-        {showConnectForm && (
+          {/* Connect / Collab Popup */}
+          <AnimatePresence>
+            {showConnectForm && (
           <>
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setShowConnectForm(false)}
-              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100]"
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[9997]"
             />
             <motion.div
-              initial={{ y: "100%" }}
-              animate={{ y: 0 }}
-              exit={{ y: "100%" }}
+              initial={{ x: 100, y: "100%" }}
+              animate={{ x: 0, y: 0 }}
+              exit={{ x: 100, y: "100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="fixed bottom-0 left-0 w-full z-[101] bg-[#111] border-t border-[#d4af37]/30 rounded-t-3xl max-h-[90vh] overflow-y-auto"
+              className="fixed bottom-0 left-0 w-full z-[9998] bg-white text-gray-950 border-t border-[#A4F4FD]/50 rounded-t-[1.35rem] md:rounded-t-3xl max-h-[92vh] md:max-h-[90vh] overflow-y-auto shadow-[0_-24px_80px_rgba(0,0,0,0.35)]"
             >
-              <div className="max-w-2xl mx-auto p-6 md:p-10">
-                <div className="flex justify-between items-center mb-8">
-                  <h3 className="text-3xl font-playfair font-bold bg-gradient-to-r from-[#d4af37] to-[#e5b955] bg-clip-text text-transparent">Collab With Producer Ujay</h3>
-                  <button onClick={() => setShowConnectForm(false)} className="p-2 rounded-full bg-white/5 hover:bg-white/10 text-white transition-colors">
-                    <X className="w-6 h-6" />
+              <div className="max-w-2xl mx-auto p-4 sm:p-5 md:p-10">
+                <div className="flex justify-between items-center gap-2 sm:gap-3 mb-5 md:mb-8">
+                  <h3 className={modalHeadingClass}>Collab With Producer Ujay</h3>
+                  <button onClick={() => setShowConnectForm(false)} aria-label="Close collab form" className="shrink-0 p-1.5 md:p-2 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-950 transition-colors">
+                    <X className="w-5 h-5 md:w-6 md:h-6" />
                   </button>
                 </div>
-                <form className="flex flex-col gap-5">
+                <div className="mb-6 md:mb-8">
+                  <PopupVideo src={collabVideoUrl} title="Collab with Producer Ujay video" />
+                </div>
+                <form className="flex flex-col gap-4 md:gap-5">
                   <div className="flex flex-col gap-2">
-                    <label className="text-sm text-white/70">Name</label>
-                    <input type="text" className="bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#d4af37]/50" placeholder="Your Name" />
+                    <label className={modalLabelClass}>Name</label>
+                    <input type="text" className={modalInputClass} placeholder="Your Name" />
                   </div>
                   <div className="flex flex-col gap-2">
-                    <label className="text-sm text-white/70">Email Address</label>
-                    <input type="email" className="bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#d4af37]/50" placeholder="you@example.com" />
+                    <label className={modalLabelClass}>Email Address</label>
+                    <input type="email" className={modalInputClass} placeholder="you@example.com" />
                   </div>
                   <div className="flex flex-col gap-2">
-                    <label className="text-sm text-white/70">Type of Collaboration</label>
-                    <select className="bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#d4af37]/50 appearance-none">
-                      <option value="content" className="bg-[#111]">Content Creation</option>
-                      <option value="sponsorship" className="bg-[#111]">Sponsorship</option>
-                      <option value="event" className="bg-[#111]">Event / Speaking</option>
-                      <option value="other" className="bg-[#111]">Other</option>
+                    <label className={modalLabelClass}>Type of Collaboration</label>
+                    <select className={`${modalInputClass} appearance-none`}>
+                      <option value="content">Content Creation</option>
+                      <option value="sponsorship">Sponsorship</option>
+                      <option value="event">Event / Speaking</option>
+                      <option value="other">Other</option>
                     </select>
                   </div>
                   <div className="flex flex-col gap-2">
-                    <label className="text-sm text-white/70">Collaboration Details</label>
-                    <textarea className="bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#d4af37]/50 min-h-[120px]" placeholder="Tell us how you want to collaborate..."></textarea>
+                    <label className={modalLabelClass}>Collaboration Details</label>
+                    <textarea className={`${modalInputClass} min-h-[120px]`} placeholder="Tell us how you want to collaborate..."></textarea>
                   </div>
                   <button type="button" onClick={(e) => { e.preventDefault(); setShowConnectForm(false); }} className="c3-btn-gold mt-4 w-full md:w-auto self-end">
                     <span>Send Proposal</span>
@@ -459,8 +508,11 @@ export default function PricingSection() {
               </div>
             </motion.div>
           </>
-        )}
-      </AnimatePresence>
+            )}
+          </AnimatePresence>
+        </>,
+        modalRoot
+      )}
     </section>
   );
 }
