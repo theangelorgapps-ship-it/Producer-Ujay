@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { Volume2, VolumeX, X } from 'lucide-react';
@@ -6,43 +6,7 @@ import { siteContent } from '../lib/siteContent';
 
 const advertiseVideoUrl = 'https://assets.cdn.filesafe.space/uUwEUa6rp4Gx1NEi2KiM/media/69fead25a7b9e0385a1a1053.mp4';
 const collabVideoUrl = 'https://assets.cdn.filesafe.space/uUwEUa6rp4Gx1NEi2KiM/media/69feaeeea3dd25aa2abc9256.mp4';
-const modalInputClass = 'bg-white border border-gray-200 rounded-lg px-4 py-3 text-gray-950 placeholder:text-gray-400 focus:outline-none focus:border-[#0B2551] focus:ring-2 focus:ring-[#A4F4FD]/40 transition-shadow';
-const modalLabelClass = 'text-sm font-semibold text-gray-700';
 const modalHeadingClass = 'font-display text-[clamp(1.15rem,5vw,2rem)] italic font-normal leading-none text-black whitespace-nowrap';
-
-type AdvertiseFormState = {
-  firstName: string;
-  lastName: string;
-  email: string;
-  socialHandle: string;
-  company: string;
-  message: string;
-};
-
-type CollabFormState = {
-  name: string;
-  email: string;
-  socialHandle: string;
-  collaborationType: string;
-  details: string;
-};
-
-const initialAdvertiseForm: AdvertiseFormState = {
-  firstName: '',
-  lastName: '',
-  email: '',
-  socialHandle: '',
-  company: '',
-  message: '',
-};
-
-const initialCollabForm: CollabFormState = {
-  name: '',
-  email: '',
-  socialHandle: '',
-  collaborationType: 'content',
-  details: '',
-};
 
 function PopupVideo({ src, title }: { src: string; title: string }) {
   const [muted, setMuted] = useState(true);
@@ -70,49 +34,67 @@ function PopupVideo({ src, title }: { src: string; title: string }) {
   );
 }
 
+function LeadConnectorForm({
+  formId,
+  formName,
+  height,
+}: {
+  formId: string;
+  formName: string;
+  height: number;
+}) {
+  const iframeId = `inline-${formId}`;
+
+  useEffect(() => {
+    const scriptId = 'leadconnector-form-embed-script';
+    if (document.getElementById(scriptId)) return;
+
+    const script = document.createElement('script');
+    script.id = scriptId;
+    script.src = 'https://link.msgsndr.com/js/form_embed.js';
+    script.async = true;
+    document.body.appendChild(script);
+  }, []);
+
+  return (
+    <div className="leadconnector-frame-shell relative overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+      <iframe
+        src={`https://api.leadconnectorhq.com/widget/form/${formId}`}
+        id={iframeId}
+        title={formName}
+        data-layout="{'id':'INLINE'}"
+        data-trigger-type="alwaysShow"
+        data-trigger-value=""
+        data-activation-type="alwaysActivated"
+        data-activation-value=""
+        data-deactivation-type="neverDeactivate"
+        data-deactivation-value=""
+        data-form-name={formName}
+        data-height={height}
+        data-layout-iframe-id={iframeId}
+        data-form-id={formId}
+        loading="eager"
+        className="block w-full border-0 bg-white"
+        style={{
+          minHeight: `${Math.min(height, 760)}px`,
+          height: `min(${height}px, calc(92vh - 320px))`,
+          borderRadius: 8,
+        }}
+      />
+    </div>
+  );
+}
+
 export default function PricingSection() {
   const [yearly, setYearly] = useState(false);
   const [showAdvertiseForm, setShowAdvertiseForm] = useState(false);
   const [showConnectForm, setShowConnectForm] = useState(false);
-  const [advertiseForm, setAdvertiseForm] = useState(initialAdvertiseForm);
-  const [collabForm, setCollabForm] = useState(initialCollabForm);
-  const [advertiseStatus, setAdvertiseStatus] = useState('');
-  const [collabStatus, setCollabStatus] = useState('');
-  const [submittingForm, setSubmittingForm] = useState<'advertise' | 'collab' | null>(null);
   const modalRoot = typeof document === 'undefined' ? null : document.body;
   const { connect } = siteContent;
   const cardsByKind = Object.fromEntries(connect.cards.map((card) => [card.kind, card]));
   const collabCard = cardsByKind.collab;
   const advertiseCard = cardsByKind.advertise;
   const communityCard = cardsByKind.community;
-
-  const submitForm = async (formType: 'advertise' | 'collab') => {
-    const isAdvertise = formType === 'advertise';
-    const setStatus = isAdvertise ? setAdvertiseStatus : setCollabStatus;
-    const fields = isAdvertise ? advertiseForm : collabForm;
-
-    setStatus('');
-
-    setSubmittingForm(formType);
-    const subject = isAdvertise ? 'Advertise with Producer Ujay' : 'Collab with Producer Ujay';
-    const body = Object.entries(fields)
-      .map(([key, value]) => `${key}: ${value}`)
-      .join('\n');
-
-    window.location.href = `mailto:team@producerujay.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    setStatus('Opening your email app...');
-
-    window.setTimeout(() => {
-      if (isAdvertise) {
-        setAdvertiseForm(initialAdvertiseForm);
-        setShowAdvertiseForm(false);
-      } else {
-        setCollabForm(initialCollabForm);
-        setShowConnectForm(false);
-      }
-      setSubmittingForm(null);
-    }, 600);
-  };
   
   return (
     <section id="connect" className="c3-section relative w-full overflow-hidden min-h-screen flex flex-col items-center py-8 md:py-[40px] px-4 md:px-[20px]">
@@ -312,21 +294,29 @@ export default function PricingSection() {
           box-shadow: inset 0 1px 2px rgba(255,255,255,0.78), inset 0 -1px 2px rgba(0,0,0,0.4);
         }
         .c3-section .c3-primary-cta-glow {
-          border-color: rgba(255, 255, 255, 0.9);
+          background-position: 16% center;
+          border-color: rgba(255, 249, 230, 0.96);
           box-shadow:
-            inset 0 1px 3px rgba(255,255,255,0.92),
-            inset 0 -1px 3px rgba(0,0,0,0.5),
+            inset 0 1px 3px rgba(255,255,255,0.9),
+            inset 0 -1px 3px rgba(0,0,0,0.42),
+            0 5px 18px rgba(0,0,0,0.48),
             0 0 0 1px rgba(255, 255, 255, 0.18),
-            0 0 18px rgba(255, 255, 255, 0.2),
-            0 0 36px rgba(212, 175, 55, 0.18);
+            0 0 18px rgba(255, 255, 255, 0.18),
+            0 0 34px rgba(212, 175, 55, 0.22);
         }
         .c3-section .c3-primary-cta-glow:hover {
+          background-position: right center;
           box-shadow:
             inset 0 1px 3px rgba(255,255,255,0.96),
-            inset 0 -1px 3px rgba(0,0,0,0.5),
-            0 0 0 1px rgba(255, 255, 255, 0.28),
-            0 0 24px rgba(255, 255, 255, 0.28),
-            0 0 48px rgba(212, 175, 55, 0.22);
+            inset 0 -1px 3px rgba(0,0,0,0.48),
+            0 7px 20px rgba(0,0,0,0.55),
+            0 0 0 1px rgba(255, 255, 255, 0.24),
+            0 0 22px rgba(255, 255, 255, 0.24),
+            0 0 42px rgba(212, 175, 55, 0.26);
+        }
+        .leadconnector-frame-shell iframe {
+          width: 100%;
+          border: 0;
         }
         .c3-card-content {
           position: relative;
@@ -635,38 +625,7 @@ export default function PricingSection() {
                 <div className="mb-6 md:mb-8">
                   <PopupVideo src={advertiseVideoUrl} title="Advertise with Producer Ujay video" />
                 </div>
-                <form className="flex flex-col gap-4 md:gap-5" onSubmit={(e) => { e.preventDefault(); submitForm('advertise'); }}>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <div className="flex flex-col gap-2">
-                      <label className={modalLabelClass}>First Name</label>
-                      <input required type="text" className={modalInputClass} placeholder="John" value={advertiseForm.firstName} onChange={(e) => setAdvertiseForm((current) => ({ ...current, firstName: e.target.value }))} />
-                    </div>
-                    <div className="flex flex-col gap-2">
-                      <label className={modalLabelClass}>Last Name</label>
-                      <input required type="text" className={modalInputClass} placeholder="Doe" value={advertiseForm.lastName} onChange={(e) => setAdvertiseForm((current) => ({ ...current, lastName: e.target.value }))} />
-                    </div>
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    <label className={modalLabelClass}>Email Address</label>
-                    <input required type="email" className={modalInputClass} placeholder="john@company.com" value={advertiseForm.email} onChange={(e) => setAdvertiseForm((current) => ({ ...current, email: e.target.value }))} />
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    <label className={modalLabelClass}>Social Media Handle</label>
-                    <input required type="text" className={modalInputClass} placeholder="@yourbrand" value={advertiseForm.socialHandle} onChange={(e) => setAdvertiseForm((current) => ({ ...current, socialHandle: e.target.value }))} />
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    <label className={modalLabelClass}>Company / Brand</label>
-                    <input required type="text" className={modalInputClass} placeholder="Your Brand Name" value={advertiseForm.company} onChange={(e) => setAdvertiseForm((current) => ({ ...current, company: e.target.value }))} />
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    <label className={modalLabelClass}>Message / Goals</label>
-                    <textarea required className={`${modalInputClass} min-h-[120px]`} placeholder="Tell us about your advertising goals..." value={advertiseForm.message} onChange={(e) => setAdvertiseForm((current) => ({ ...current, message: e.target.value }))}></textarea>
-                  </div>
-                  {advertiseStatus && <p className="text-sm font-semibold text-red-700">{advertiseStatus}</p>}
-                  <button type="submit" disabled={submittingForm === 'advertise'} className="c3-btn-gold mt-4 w-full md:w-auto self-end disabled:cursor-not-allowed disabled:opacity-60">
-                    <span>{submittingForm === 'advertise' ? 'Submitting...' : 'Submit Request'}</span>
-                  </button>
-                </form>
+                <LeadConnectorForm formId="Yjra8JFHwosBJ2LXgpOZ" formName="Advertise" height={891} />
               </div>
             </motion.div>
           </>
@@ -701,37 +660,7 @@ export default function PricingSection() {
                 <div className="mb-6 md:mb-8">
                   <PopupVideo src={collabVideoUrl} title="Collab with Producer Ujay video" />
                 </div>
-                <form className="flex flex-col gap-4 md:gap-5" onSubmit={(e) => { e.preventDefault(); submitForm('collab'); }}>
-                  <div className="flex flex-col gap-2">
-                    <label className={modalLabelClass}>Name</label>
-                    <input required type="text" className={modalInputClass} placeholder="Your Name" value={collabForm.name} onChange={(e) => setCollabForm((current) => ({ ...current, name: e.target.value }))} />
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    <label className={modalLabelClass}>Email Address</label>
-                    <input required type="email" className={modalInputClass} placeholder="you@example.com" value={collabForm.email} onChange={(e) => setCollabForm((current) => ({ ...current, email: e.target.value }))} />
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    <label className={modalLabelClass}>Social Media Handle</label>
-                    <input required type="text" className={modalInputClass} placeholder="@yourhandle" value={collabForm.socialHandle} onChange={(e) => setCollabForm((current) => ({ ...current, socialHandle: e.target.value }))} />
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    <label className={modalLabelClass}>Type of Collaboration</label>
-                    <select required className={`${modalInputClass} appearance-none`} value={collabForm.collaborationType} onChange={(e) => setCollabForm((current) => ({ ...current, collaborationType: e.target.value }))}>
-                      <option value="content">Content Creation</option>
-                      <option value="sponsorship">Sponsorship</option>
-                      <option value="event">Event / Speaking</option>
-                      <option value="other">Other</option>
-                    </select>
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    <label className={modalLabelClass}>Collaboration Details</label>
-                    <textarea required className={`${modalInputClass} min-h-[120px]`} placeholder="Tell us how you want to collaborate..." value={collabForm.details} onChange={(e) => setCollabForm((current) => ({ ...current, details: e.target.value }))}></textarea>
-                  </div>
-                  {collabStatus && <p className="text-sm font-semibold text-red-700">{collabStatus}</p>}
-                  <button type="submit" disabled={submittingForm === 'collab'} className="c3-btn-gold mt-4 w-full md:w-auto self-end disabled:cursor-not-allowed disabled:opacity-60">
-                    <span>{submittingForm === 'collab' ? 'Submitting...' : 'Send Proposal'}</span>
-                  </button>
-                </form>
+                <LeadConnectorForm formId="uteitrfUjzkC1H9W9y8L" formName="Collab" height={799} />
               </div>
             </motion.div>
           </>
