@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { Volume2, VolumeX, X } from 'lucide-react';
-import { useSiteContent } from '../hooks/useSiteContent';
-import Turnstile from './form/Turnstile';
+import { siteContent } from '../lib/siteContent';
 
 const advertiseVideoUrl = 'https://assets.cdn.filesafe.space/uUwEUa6rp4Gx1NEi2KiM/media/69fead25a7b9e0385a1a1053.mp4';
 const collabVideoUrl = 'https://assets.cdn.filesafe.space/uUwEUa6rp4Gx1NEi2KiM/media/69feaeeea3dd25aa2abc9256.mp4';
@@ -77,13 +76,11 @@ export default function PricingSection() {
   const [showConnectForm, setShowConnectForm] = useState(false);
   const [advertiseForm, setAdvertiseForm] = useState(initialAdvertiseForm);
   const [collabForm, setCollabForm] = useState(initialCollabForm);
-  const [advertiseCaptcha, setAdvertiseCaptcha] = useState('');
-  const [collabCaptcha, setCollabCaptcha] = useState('');
   const [advertiseStatus, setAdvertiseStatus] = useState('');
   const [collabStatus, setCollabStatus] = useState('');
   const [submittingForm, setSubmittingForm] = useState<'advertise' | 'collab' | null>(null);
   const modalRoot = typeof document === 'undefined' ? null : document.body;
-  const { connect } = useSiteContent();
+  const { connect } = siteContent;
   const cardsByKind = Object.fromEntries(connect.cards.map((card) => [card.kind, card]));
   const collabCard = cardsByKind.collab;
   const advertiseCard = cardsByKind.advertise;
@@ -91,46 +88,30 @@ export default function PricingSection() {
 
   const submitForm = async (formType: 'advertise' | 'collab') => {
     const isAdvertise = formType === 'advertise';
-    const turnstileToken = isAdvertise ? advertiseCaptcha : collabCaptcha;
     const setStatus = isAdvertise ? setAdvertiseStatus : setCollabStatus;
     const fields = isAdvertise ? advertiseForm : collabForm;
 
     setStatus('');
 
-    if (!turnstileToken) {
-      setStatus('Please complete the captcha before submitting.');
-      return;
-    }
-
     setSubmittingForm(formType);
-    try {
-      const response = await fetch('/api/submit-form', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ formType, fields, turnstileToken }),
-      });
-      const result = await response.json();
+    const subject = isAdvertise ? 'Advertise with Producer Ujay' : 'Collab with Producer Ujay';
+    const body = Object.entries(fields)
+      .map(([key, value]) => `${key}: ${value}`)
+      .join('\n');
 
-      if (!response.ok) {
-        setStatus(result.error || 'Unable to submit right now.');
-        return;
-      }
+    window.location.href = `mailto:team@producerujay.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    setStatus('Opening your email app...');
 
-      setStatus('Submitted successfully.');
+    window.setTimeout(() => {
       if (isAdvertise) {
         setAdvertiseForm(initialAdvertiseForm);
-        setAdvertiseCaptcha('');
         setShowAdvertiseForm(false);
       } else {
         setCollabForm(initialCollabForm);
-        setCollabCaptcha('');
         setShowConnectForm(false);
       }
-    } catch {
-      setStatus('Unable to submit right now.');
-    } finally {
       setSubmittingForm(null);
-    }
+    }, 600);
   };
   
   return (
@@ -681,7 +662,6 @@ export default function PricingSection() {
                     <label className={modalLabelClass}>Message / Goals</label>
                     <textarea required className={`${modalInputClass} min-h-[120px]`} placeholder="Tell us about your advertising goals..." value={advertiseForm.message} onChange={(e) => setAdvertiseForm((current) => ({ ...current, message: e.target.value }))}></textarea>
                   </div>
-                  <Turnstile action="advertise" onVerify={setAdvertiseCaptcha} onExpire={() => setAdvertiseCaptcha('')} />
                   {advertiseStatus && <p className="text-sm font-semibold text-red-700">{advertiseStatus}</p>}
                   <button type="submit" disabled={submittingForm === 'advertise'} className="c3-btn-gold mt-4 w-full md:w-auto self-end disabled:cursor-not-allowed disabled:opacity-60">
                     <span>{submittingForm === 'advertise' ? 'Submitting...' : 'Submit Request'}</span>
@@ -747,7 +727,6 @@ export default function PricingSection() {
                     <label className={modalLabelClass}>Collaboration Details</label>
                     <textarea required className={`${modalInputClass} min-h-[120px]`} placeholder="Tell us how you want to collaborate..." value={collabForm.details} onChange={(e) => setCollabForm((current) => ({ ...current, details: e.target.value }))}></textarea>
                   </div>
-                  <Turnstile action="collab" onVerify={setCollabCaptcha} onExpire={() => setCollabCaptcha('')} />
                   {collabStatus && <p className="text-sm font-semibold text-red-700">{collabStatus}</p>}
                   <button type="submit" disabled={submittingForm === 'collab'} className="c3-btn-gold mt-4 w-full md:w-auto self-end disabled:cursor-not-allowed disabled:opacity-60">
                     <span>{submittingForm === 'collab' ? 'Submitting...' : 'Send Proposal'}</span>

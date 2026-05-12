@@ -1,6 +1,6 @@
 import { useRef, useState, type ReactNode } from "react";
 import { motion, useInView, useReducedMotion } from "motion/react";
-import { useSiteContent } from "../hooks/useSiteContent";
+import { siteContent } from "../lib/siteContent";
 
 function TextReveal({ children, delay = 0 }: { children: ReactNode, delay?: number }) {
   const ref = useRef(null);
@@ -84,7 +84,7 @@ function HighlightedText({ text }: { text: string }) {
 export default function AboutSection() {
   const [isExpanded, setIsExpanded] = useState(false);
   const shouldReduceMotion = useReducedMotion();
-  const { about } = useSiteContent();
+  const { about } = siteContent;
   const aboutImages = about.images;
 
   return (

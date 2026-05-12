@@ -1,15 +1,13 @@
-import { createClient } from '@sanity/client';
-
-type SanityImage = {
+type ContentImage = {
   alt?: string;
-  url?: string;
+  url: string;
 };
 
 type AboutContent = {
   title: string;
   intro: string;
   body: string[];
-  images: SanityImage[];
+  images: ContentImage[];
 };
 
 type StatBar = {
@@ -23,7 +21,7 @@ type ConnectCard = {
   title: string;
   description: string;
   buttonLabel: string;
-  image: SanityImage;
+  image: ContentImage;
   url?: string;
 };
 
@@ -46,7 +44,7 @@ export type SiteContent = {
   connect: ConnectContent;
 };
 
-export const defaultSiteContent: SiteContent = {
+export const siteContent: SiteContent = {
   about: {
     title: 'About Producer Ujay',
     intro:
@@ -125,93 +123,3 @@ export const defaultSiteContent: SiteContent = {
     },
   },
 };
-
-const projectId = import.meta.env.VITE_SANITY_PROJECT_ID;
-const dataset = import.meta.env.VITE_SANITY_DATASET || 'production';
-const apiVersion = import.meta.env.VITE_SANITY_API_VERSION || '2025-01-01';
-const useCdn = import.meta.env.VITE_SANITY_USE_CDN !== 'false';
-
-const sanityClient =
-  projectId && dataset
-    ? createClient({
-        projectId,
-        dataset,
-        apiVersion,
-        useCdn,
-        perspective: 'published',
-      })
-    : null;
-
-const siteContentQuery = `*[_type == "siteSettings"][0]{
-  about{
-    title,
-    intro,
-    body,
-    images[]{
-      alt,
-      "url": coalesce(url, image.asset->url)
-    }
-  },
-  connect{
-    stats{
-      title,
-      subtitle,
-      bars[]{platform, value, height}
-    },
-    cards[]{
-      kind,
-      title,
-      description,
-      buttonLabel,
-      url,
-      image{
-        alt,
-        "url": coalesce(url, image.asset->url)
-      }
-    },
-    primaryCta,
-    modals{
-      advertiseHeading,
-      collabHeading
-    }
-  }
-}`;
-
-function mergeSiteContent(content?: Partial<SiteContent> | null): SiteContent {
-  return {
-    about: {
-      ...defaultSiteContent.about,
-      ...content?.about,
-      images: content?.about?.images?.length ? content.about.images : defaultSiteContent.about.images,
-      body: content?.about?.body?.length ? content.about.body : defaultSiteContent.about.body,
-    },
-    connect: {
-      ...defaultSiteContent.connect,
-      ...content?.connect,
-      stats: {
-        ...defaultSiteContent.connect.stats,
-        ...content?.connect?.stats,
-        bars: content?.connect?.stats?.bars?.length
-          ? content.connect.stats.bars
-          : defaultSiteContent.connect.stats.bars,
-      },
-      cards: content?.connect?.cards?.length ? content.connect.cards : defaultSiteContent.connect.cards,
-      modals: {
-        ...defaultSiteContent.connect.modals,
-        ...content?.connect?.modals,
-      },
-    },
-  };
-}
-
-export async function fetchSiteContent(): Promise<SiteContent> {
-  if (!sanityClient) return defaultSiteContent;
-
-  try {
-    const content = await sanityClient.fetch<Partial<SiteContent> | null>(siteContentQuery);
-    return mergeSiteContent(content);
-  } catch (error) {
-    console.warn('Unable to load Sanity content. Falling back to local defaults.', error);
-    return defaultSiteContent;
-  }
-}
