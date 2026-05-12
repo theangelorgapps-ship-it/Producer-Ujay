@@ -98,7 +98,8 @@ export const defaultSiteContent: SiteContent = {
       {
         kind: 'advertise',
         title: 'Advertise with Producer Ujay',
-        description: 'From Cape Town to London - designed for experience, information, and connections.',
+        description:
+          'Reach audiences already tuned into ambition, business, and luxury. Place your brand inside trusted content with strong view potential, cultural relevance, and a direct path to attention.',
         buttonLabel: 'Advertise',
         image: {
           alt: 'Advertise with Producer Ujay',

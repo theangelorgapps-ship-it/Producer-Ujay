@@ -331,21 +331,21 @@ export default function PricingSection() {
           box-shadow: inset 0 1px 2px rgba(255,255,255,0.78), inset 0 -1px 2px rgba(0,0,0,0.4);
         }
         .c3-section .c3-primary-cta-glow {
-          border-color: rgba(164, 244, 253, 0.95);
+          border-color: rgba(255, 255, 255, 0.9);
           box-shadow:
             inset 0 1px 3px rgba(255,255,255,0.92),
             inset 0 -1px 3px rgba(0,0,0,0.5),
-            0 0 0 1px rgba(164, 244, 253, 0.48),
-            0 0 28px rgba(164, 244, 253, 0.42),
-            0 0 56px rgba(212, 175, 55, 0.32);
+            0 0 0 1px rgba(255, 255, 255, 0.18),
+            0 0 18px rgba(255, 255, 255, 0.2),
+            0 0 36px rgba(212, 175, 55, 0.18);
         }
         .c3-section .c3-primary-cta-glow:hover {
           box-shadow:
             inset 0 1px 3px rgba(255,255,255,0.96),
             inset 0 -1px 3px rgba(0,0,0,0.5),
-            0 0 0 1px rgba(164, 244, 253, 0.7),
-            0 0 36px rgba(164, 244, 253, 0.58),
-            0 0 70px rgba(212, 175, 55, 0.38);
+            0 0 0 1px rgba(255, 255, 255, 0.28),
+            0 0 24px rgba(255, 255, 255, 0.28),
+            0 0 48px rgba(212, 175, 55, 0.22);
         }
         .c3-card-content {
           position: relative;

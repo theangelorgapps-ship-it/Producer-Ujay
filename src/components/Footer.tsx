@@ -23,8 +23,8 @@ export default function Footer() {
         {/* Contact Info */}
         <div className="flex flex-col gap-4 items-center md:items-start">
           <h4 className="text-white font-medium mb-1 md:mb-2">Contact</h4>
-          <a href="mailto:tteam@producerujay.com" className="text-white/72 hover:text-white transition-colors duration-300 text-sm">
-            tteam@producerujay.com
+          <a href="mailto:team@producerujay.com" className="text-white/72 hover:text-white transition-colors duration-300 text-sm">
+            team@producerujay.com
           </a>
         </div>
 
