@@ -1,11 +1,7 @@
 import { useRef, useState, useEffect, type ReactNode } from "react";
 import { motion, useInView, useReducedMotion } from "motion/react";
 import { Youtube, Instagram, Twitter, Linkedin } from "lucide-react";
-
-const aboutImages = [
-  "https://assets.cdn.filesafe.space/uUwEUa6rp4Gx1NEi2KiM/media/6a026498a2398e6af2e9e107.jpg",
-  "https://assets.cdn.filesafe.space/uUwEUa6rp4Gx1NEi2KiM/media/6a02649860a7a52fdc116001.jpg",
-];
+import { useSiteContent } from "../hooks/useSiteContent";
 
 function TextReveal({ children, delay = 0 }: { children: ReactNode, delay?: number }) {
   const ref = useRef(null);
@@ -92,6 +88,8 @@ function SocialStats() {
 export default function AboutSection() {
   const [isExpanded, setIsExpanded] = useState(false);
   const shouldReduceMotion = useReducedMotion();
+  const { about } = useSiteContent();
+  const aboutImages = about.images;
 
   return (
     <section id="about" className="bg-black text-white py-16 md:py-24 px-5 sm:px-10 lg:px-20 min-h-screen flex items-center relative z-10 w-full overflow-hidden">
@@ -112,9 +110,9 @@ export default function AboutSection() {
             }}
             className="relative mx-auto aspect-[1.08/1] w-full max-w-[620px] sm:aspect-[1.16/1] md:max-w-none"
           >
-            {aboutImages.map((src, index) => (
+            {aboutImages.map((image, index) => (
               <motion.div
-                key={src}
+                key={`${image.url}-${index}`}
                 variants={{
                   hidden: { opacity: 0, x: index === 0 ? -44 : 44, y: index === 0 ? 24 : -12, scale: 0.92, rotate: index === 0 ? -2.5 : 2.5 },
                   visible: { opacity: 1, x: 0, y: 0, scale: 1 },
@@ -126,8 +124,8 @@ export default function AboutSection() {
                 }`}
               >
                 <motion.img
-                  src={src}
-                  alt={index === 0 ? "Producer Ujay" : "Producer Ujay portrait"}
+                  src={image.url}
+                  alt={image.alt ?? (index === 0 ? "Producer Ujay" : "Producer Ujay portrait")}
                   animate={shouldReduceMotion ? undefined : { y: index === 0 ? [0, -7, 0] : [0, 7, 0] }}
                   whileHover={shouldReduceMotion ? undefined : { scale: 1.055 }}
                   transition={{
@@ -156,13 +154,13 @@ export default function AboutSection() {
             transition={{ duration: 0.8, ease: "easeOut" }}
             className="font-playfair text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-light mb-5 md:mb-8 bg-gradient-to-r from-gray-100 via-gray-300 to-gray-500 bg-clip-text text-transparent py-2 leading-tight tracking-tight"
           >
-            About Producer Ujay
+            {about.title}
           </motion.h2>
 
           <div className="text-gray-100 text-base md:text-[1.15rem] leading-[1.7] md:leading-[1.8] font-normal tracking-wide space-y-5 md:space-y-6">
             <TextReveal delay={0.1}>
               <p>
-                Producer UJAY is a British entrepreneur, investor, media personality, and digital educator focused on inspiring a new generation through exposure, ambition, and entrepreneurship. Built around the belief that those who say it cannot be done should get out of the way of those who are doing it, UJAY has become known for documenting success, luxury, and business in a way that motivates others to think beyond their limitations. His message is simple: don&apos;t hate, take notes.
+                {about.intro}
               </p>
             </TextReveal>
 
@@ -184,24 +182,9 @@ export default function AboutSection() {
                 transition={{ duration: 0.5, ease: "easeInOut" }}
                 className="space-y-6 overflow-hidden"
               >
-                <p>
-                  UJAY believes exposure is one of the most valuable assets a person can receive. As he often says, there is a reason why on an Emirates flight you walk through First Class before reaching Economy. Exposure changes perspective. When people see greatness, wealth, and success up close, they begin to believe it is possible for them too. Through his content, interviews, and businesses, UJAY&apos;s mission is to expose people to worlds they once believed were unreachable and show how self-made entrepreneurs turned vision into reality.
-                </p>
-                <p>
-                  From launching his first business at 11 years old to building a growing portfolio across media, technology, real estate, and hospitality, UJAY has developed a modern entrepreneurial ecosystem designed to inspire and educate.
-                </p>
-                <p>
-                  He is the founder of Pink Marble Studios, a media production company specialising in cinematography, photography, and digital advertising, and the creator of Monopoly Millionaire, a business-focused platform where he interviews entrepreneurs and successful business figures.
-                </p>
-                <p>
-                  He also founded Digital Martyr, an advanced online business education platform and private community focused on wealth creation and digital entrepreneurship, alongside PlutoCat, his technology brand specialising in premium audio products and earphones.
-                </p>
-                <p>
-                  Beyond media and technology, UJAY manages a property portfolio of over 100 properties, serves on the board of Beethoven Hotel, Zimbabwe&apos;s first transit hotel, and is a director of the premium water brand Black Gold H2O.
-                </p>
-                <p>
-                  Through his businesses and platforms, Producer UJAY continues to inspire ambitious young people globally to think bigger, move differently, and realise that exposure can change the trajectory of an entire life.
-                </p>
+                {about.body.map((paragraph) => (
+                  <p key={paragraph}>{paragraph}</p>
+                ))}
 
                 <motion.button 
                   onClick={() => setIsExpanded(false)}

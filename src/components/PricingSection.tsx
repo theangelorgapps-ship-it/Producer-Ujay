@@ -2,14 +2,48 @@ import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { Volume2, VolumeX, X } from 'lucide-react';
+import { useSiteContent } from '../hooks/useSiteContent';
+import Turnstile from './form/Turnstile';
 
 const advertiseVideoUrl = 'https://assets.cdn.filesafe.space/uUwEUa6rp4Gx1NEi2KiM/media/69fead25a7b9e0385a1a1053.mp4';
 const collabVideoUrl = 'https://assets.cdn.filesafe.space/uUwEUa6rp4Gx1NEi2KiM/media/69feaeeea3dd25aa2abc9256.mp4';
-const advertiseImageUrl = 'https://assets.cdn.filesafe.space/uUwEUa6rp4Gx1NEi2KiM/media/6a026a15d11dcc8705377d68.jpg';
-const collabImageUrl = 'https://assets.cdn.filesafe.space/uUwEUa6rp4Gx1NEi2KiM/media/6a026b0bbc1f77cc35b3a800.webp';
 const modalInputClass = 'bg-white border border-gray-200 rounded-lg px-4 py-3 text-gray-950 placeholder:text-gray-400 focus:outline-none focus:border-[#0B2551] focus:ring-2 focus:ring-[#A4F4FD]/40 transition-shadow';
 const modalLabelClass = 'text-sm font-semibold text-gray-700';
 const modalHeadingClass = 'font-display text-[clamp(1.15rem,5vw,2rem)] italic font-normal leading-none text-black whitespace-nowrap';
+
+type AdvertiseFormState = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  socialHandle: string;
+  company: string;
+  message: string;
+};
+
+type CollabFormState = {
+  name: string;
+  email: string;
+  socialHandle: string;
+  collaborationType: string;
+  details: string;
+};
+
+const initialAdvertiseForm: AdvertiseFormState = {
+  firstName: '',
+  lastName: '',
+  email: '',
+  socialHandle: '',
+  company: '',
+  message: '',
+};
+
+const initialCollabForm: CollabFormState = {
+  name: '',
+  email: '',
+  socialHandle: '',
+  collaborationType: 'content',
+  details: '',
+};
 
 function PopupVideo({ src, title }: { src: string; title: string }) {
   const [muted, setMuted] = useState(true);
@@ -41,7 +75,63 @@ export default function PricingSection() {
   const [yearly, setYearly] = useState(false);
   const [showAdvertiseForm, setShowAdvertiseForm] = useState(false);
   const [showConnectForm, setShowConnectForm] = useState(false);
+  const [advertiseForm, setAdvertiseForm] = useState(initialAdvertiseForm);
+  const [collabForm, setCollabForm] = useState(initialCollabForm);
+  const [advertiseCaptcha, setAdvertiseCaptcha] = useState('');
+  const [collabCaptcha, setCollabCaptcha] = useState('');
+  const [advertiseStatus, setAdvertiseStatus] = useState('');
+  const [collabStatus, setCollabStatus] = useState('');
+  const [submittingForm, setSubmittingForm] = useState<'advertise' | 'collab' | null>(null);
   const modalRoot = typeof document === 'undefined' ? null : document.body;
+  const { connect } = useSiteContent();
+  const cardsByKind = Object.fromEntries(connect.cards.map((card) => [card.kind, card]));
+  const collabCard = cardsByKind.collab;
+  const advertiseCard = cardsByKind.advertise;
+  const communityCard = cardsByKind.community;
+
+  const submitForm = async (formType: 'advertise' | 'collab') => {
+    const isAdvertise = formType === 'advertise';
+    const turnstileToken = isAdvertise ? advertiseCaptcha : collabCaptcha;
+    const setStatus = isAdvertise ? setAdvertiseStatus : setCollabStatus;
+    const fields = isAdvertise ? advertiseForm : collabForm;
+
+    setStatus('');
+
+    if (!turnstileToken) {
+      setStatus('Please complete the captcha before submitting.');
+      return;
+    }
+
+    setSubmittingForm(formType);
+    try {
+      const response = await fetch('/api/submit-form', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ formType, fields, turnstileToken }),
+      });
+      const result = await response.json();
+
+      if (!response.ok) {
+        setStatus(result.error || 'Unable to submit right now.');
+        return;
+      }
+
+      setStatus('Submitted successfully.');
+      if (isAdvertise) {
+        setAdvertiseForm(initialAdvertiseForm);
+        setAdvertiseCaptcha('');
+        setShowAdvertiseForm(false);
+      } else {
+        setCollabForm(initialCollabForm);
+        setCollabCaptcha('');
+        setShowConnectForm(false);
+      }
+    } catch {
+      setStatus('Unable to submit right now.');
+    } finally {
+      setSubmittingForm(null);
+    }
+  };
   
   return (
     <section id="connect" className="c3-section relative w-full overflow-hidden min-h-screen flex flex-col items-center py-8 md:py-[40px] px-4 md:px-[20px]">
@@ -164,7 +254,7 @@ export default function PricingSection() {
           border: 1px solid rgba(255,255,255,0.16);
           background: #070707;
         }
-        .c3-stat-icon-light { background: #f5f7fb; color: #070707; }
+        .c3-stat-icon-linkedin { background: #f5f7fb; color: #070707; }
         .c3-stat-icon-instagram { background: linear-gradient(135deg, #f7c43a, #e43c5c 50%, #7b4dff); }
         .c3-stat-icon-youtube { background: #dc2626; }
         .c3-stat-bar {
@@ -441,97 +531,80 @@ export default function PricingSection() {
         <div className="c3-card relative overflow-hidden" style={{ padding: '0', display: 'flex', flexDirection: 'column' }}>
           <div className="c3-stats-orbits" />
           <div className="c3-stats-chart">
-            {/* Pillar 1: LinkedIn */}
-            <div className="c3-stat-col">
-              <div className="c3-stat-icon c3-stat-icon-light">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+            {connect.stats.bars.map((bar) => (
+              <div className="c3-stat-col" key={bar.platform}>
+                <div className={`c3-stat-icon c3-stat-icon-${bar.platform}`}>
+                  {bar.platform === 'linkedin' && (
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+                  )}
+                  {bar.platform === 'tiktok' && (
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"></path></svg>
+                  )}
+                  {bar.platform === 'instagram' && (
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                  )}
+                  {bar.platform === 'youtube' && (
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33 2.78 2.78 0 0 0 1.94 2c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.33 29 29 0 0 0-.46-5.33z"></path><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"></polygon></svg>
+                  )}
+                  {bar.platform === 'x' && (
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4l16 16M4 20L20 4"></path></svg>
+                  )}
+                </div>
+                <div className="c3-stat-bar" style={{ height: `${bar.height}%` }}><span>{bar.value}</span></div>
               </div>
-              <div className="c3-stat-bar" style={{ height: '30%' }}><span>8K+</span></div>
-            </div>
-            
-            {/* Pillar 2: TikTok */}
-            <div className="c3-stat-col">
-              <div className="c3-stat-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"></path></svg>
-              </div>
-              <div className="c3-stat-bar" style={{ height: '75%' }}><span>65K+</span></div>
-            </div>
-
-            {/* Pillar 3: Instagram */}
-            <div className="c3-stat-col">
-              <div className="c3-stat-icon c3-stat-icon-instagram">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
-              </div>
-              <div className="c3-stat-bar" style={{ height: '60%' }}><span>135K+</span></div>
-            </div>
-
-            {/* Pillar 4: YouTube */}
-            <div className="c3-stat-col">
-              <div className="c3-stat-icon c3-stat-icon-youtube">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33 2.78 2.78 0 0 0 1.94 2c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.33 29 29 0 0 0-.46-5.33z"></path><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"></polygon></svg>
-              </div>
-              <div className="c3-stat-bar" style={{ height: '90%' }}><span>110K+</span></div>
-            </div>
-
-            {/* Pillar 5: X */}
-            <div className="c3-stat-col">
-               <div className="c3-stat-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4l16 16M4 20L20 4"></path></svg>
-              </div>
-              <div className="c3-stat-bar" style={{ height: '45%' }}><span>50K+</span></div>
-            </div>
+            ))}
           </div>
 
           <div className="c3-card-body px-5 md:px-8 pb-8 md:pb-10 pt-5 md:pt-6 relative z-10 bg-gradient-to-t from-black/80 to-transparent flex flex-col justify-end">
-            <h3 className="text-[1.65rem] md:text-[32px] font-bold text-white mb-3 md:mb-4 tracking-tight leading-tight">8M+ Interactions Gained Organically</h3>
-            <p className="c3-card-copy text-[#d8d8d8] text-sm md:text-base leading-relaxed max-w-[300px]">Powered by Producer Ujay.</p>
+            <h3 className="text-[1.65rem] md:text-[32px] font-bold text-white mb-3 md:mb-4 tracking-tight leading-tight">{connect.stats.title}</h3>
+            <p className="c3-card-copy text-[#d8d8d8] text-sm md:text-base leading-relaxed max-w-[300px]">{connect.stats.subtitle}</p>
           </div>
         </div>
 
         {/* Card 2 */}
-        <div className="c3-card c3-card-feature relative overflow-hidden group" style={{ padding: '0', display: 'flex', flexDirection: 'column' }}>
+        {collabCard && <div className="c3-card c3-card-feature relative overflow-hidden group" style={{ padding: '0', display: 'flex', flexDirection: 'column' }}>
           <div className="c3-card-media w-full flex flex-col justify-center p-0 relative z-10 m-0 overflow-hidden">
-             <img src={collabImageUrl} alt="Collab with Producer Ujay" className="h-full w-full object-cover object-top" />
+             <img src={collabCard.image.url} alt={collabCard.image.alt ?? collabCard.title} className="h-full w-full object-cover object-top" />
              <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black via-black/70 to-transparent pointer-events-none" />
           </div>
 
           <div className="c3-card-body px-5 md:px-8 pb-8 md:pb-10 pt-5 md:pt-6 relative z-10 bg-gradient-to-t from-black/80 to-transparent flex flex-col justify-end items-start border-t border-transparent">
-            <h3 className="text-[1.65rem] md:text-[32px] font-bold text-white mb-3 md:mb-4 tracking-tight leading-tight">Collab With Producer Ujay</h3>
-            <p className="c3-card-copy text-[#d8d8d8] text-sm md:text-base leading-relaxed max-w-[320px] mb-6">Bring your brand into the room where ambition meets influence. Build the kind of partnership people remember.</p>
-            <button onClick={() => setShowConnectForm(true)} className="c3-btn-gold c3-card-cta"><span>Collab</span></button>
+            <h3 className="text-[1.65rem] md:text-[32px] font-bold text-white mb-3 md:mb-4 tracking-tight leading-tight">{collabCard.title}</h3>
+            <p className="c3-card-copy text-[#d8d8d8] text-sm md:text-base leading-relaxed max-w-[320px] mb-6">{collabCard.description}</p>
+            <button onClick={() => setShowConnectForm(true)} className="c3-btn-gold c3-card-cta"><span>{collabCard.buttonLabel}</span></button>
           </div>
-        </div>
+        </div>}
 
         {/* Card 3 */}
-        <div className="c3-card c3-card-feature relative overflow-hidden group" style={{ padding: '0', display: 'flex', flexDirection: 'column' }}>
+        {advertiseCard && <div className="c3-card c3-card-feature relative overflow-hidden group" style={{ padding: '0', display: 'flex', flexDirection: 'column' }}>
           <div className="c3-card-media w-full flex flex-col justify-center p-0 relative z-10 m-0 overflow-hidden">
-             <img src={advertiseImageUrl} alt="Advertise with Producer Ujay" className="h-full w-full object-cover object-top" />
+             <img src={advertiseCard.image.url} alt={advertiseCard.image.alt ?? advertiseCard.title} className="h-full w-full object-cover object-top" />
              <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black via-black/70 to-transparent pointer-events-none" />
           </div>
 
           <div className="c3-card-body px-5 md:px-8 pb-8 md:pb-10 pt-5 md:pt-6 relative z-10 bg-gradient-to-t from-black/80 to-transparent flex flex-col justify-end items-start border-t border-transparent">
-            <h3 className="text-[1.65rem] md:text-[32px] font-bold text-white mb-3 md:mb-4 tracking-tight leading-tight">Advertise with Producer Ujay</h3>
-            <p className="c3-card-copy text-[#d8d8d8] text-sm md:text-base leading-relaxed max-w-[300px] mb-6">From Cape Town to London - designed for experience, information, and connections.</p>
-            <button onClick={() => setShowAdvertiseForm(true)} className="c3-btn-gold c3-card-cta"><span>Advertise</span></button>
+            <h3 className="text-[1.65rem] md:text-[32px] font-bold text-white mb-3 md:mb-4 tracking-tight leading-tight">{advertiseCard.title}</h3>
+            <p className="c3-card-copy text-[#d8d8d8] text-sm md:text-base leading-relaxed max-w-[300px] mb-6">{advertiseCard.description}</p>
+            <button onClick={() => setShowAdvertiseForm(true)} className="c3-btn-gold c3-card-cta"><span>{advertiseCard.buttonLabel}</span></button>
           </div>
-        </div>
+        </div>}
 
         {/* Card 4 */}
-        <div className="c3-card c3-card-feature relative overflow-hidden group" style={{ padding: '0', display: 'flex', flexDirection: 'column' }}>
+        {communityCard && <div className="c3-card c3-card-feature relative overflow-hidden group" style={{ padding: '0', display: 'flex', flexDirection: 'column' }}>
           <div className="c3-card-media w-full flex flex-col justify-center p-0 relative z-10 m-0 overflow-hidden">
-             <img src="https://assets.cdn.filesafe.space/uUwEUa6rp4Gx1NEi2KiM/media/69fe8df66ca44fd334adbd41.png" alt="Community" className="h-full w-full object-cover object-top" />
+             <img src={communityCard.image.url} alt={communityCard.image.alt ?? communityCard.title} className="h-full w-full object-cover object-top" />
           </div>
 
           <div className="c3-card-body px-5 md:px-8 pb-8 md:pb-10 pt-5 md:pt-6 relative z-10 bg-gradient-to-t from-black/80 to-transparent flex flex-col justify-end items-start border-t border-transparent">
-            <h3 className="text-[1.65rem] md:text-[32px] font-bold text-white mb-3 md:mb-4 tracking-tight leading-tight">Connect on the Community</h3>
-            <p className="c3-card-copy text-[#d8d8d8] text-sm md:text-base leading-relaxed max-w-[300px] mb-6">Join our exclusive network - designed for experience, information, and connections.</p>
-            <a href="https://uuweua6rp4gx1nei2kim.app.clientclub.net/" target="_blank" rel="noopener noreferrer" className="c3-btn-gold c3-card-cta"><span>Join Now</span></a>
+            <h3 className="text-[1.65rem] md:text-[32px] font-bold text-white mb-3 md:mb-4 tracking-tight leading-tight">{communityCard.title}</h3>
+            <p className="c3-card-copy text-[#d8d8d8] text-sm md:text-base leading-relaxed max-w-[300px] mb-6">{communityCard.description}</p>
+            <a href={communityCard.url} target="_blank" rel="noopener noreferrer" className="c3-btn-gold c3-card-cta"><span>{communityCard.buttonLabel}</span></a>
           </div>
-        </div>
+        </div>}
       </div>
 
       <div className="mt-12 md:mt-16 z-10 relative flex justify-center pb-16 md:pb-20">
-        <button onClick={() => setShowConnectForm(true)} className="c3-btn-gold-large shadow-[0_0_40px_rgba(212,175,55,0.4)]"><span>Collab With Producer Ujay</span></button>
+        <button onClick={() => setShowConnectForm(true)} className="c3-btn-gold-large shadow-[0_0_40px_rgba(212,175,55,0.4)]"><span>{connect.primaryCta}</span></button>
       </div>
 
       {modalRoot && createPortal(
@@ -556,7 +629,7 @@ export default function PricingSection() {
             >
               <div className="max-w-2xl mx-auto p-4 sm:p-5 md:p-10">
                 <div className="flex justify-between items-center gap-2 sm:gap-3 mb-5 md:mb-8">
-                  <h3 className={modalHeadingClass}>Advertise with Producer Ujay</h3>
+                  <h3 className={modalHeadingClass}>{connect.modals.advertiseHeading}</h3>
                   <button onClick={() => setShowAdvertiseForm(false)} aria-label="Close advertise form" className="shrink-0 p-1.5 md:p-2 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-950 transition-colors">
                     <X className="w-5 h-5 md:w-6 md:h-6" />
                   </button>
@@ -564,35 +637,37 @@ export default function PricingSection() {
                 <div className="mb-6 md:mb-8">
                   <PopupVideo src={advertiseVideoUrl} title="Advertise with Producer Ujay video" />
                 </div>
-                <form className="flex flex-col gap-4 md:gap-5">
+                <form className="flex flex-col gap-4 md:gap-5" onSubmit={(e) => { e.preventDefault(); submitForm('advertise'); }}>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div className="flex flex-col gap-2">
                       <label className={modalLabelClass}>First Name</label>
-                      <input type="text" className={modalInputClass} placeholder="John" />
+                      <input required type="text" className={modalInputClass} placeholder="John" value={advertiseForm.firstName} onChange={(e) => setAdvertiseForm((current) => ({ ...current, firstName: e.target.value }))} />
                     </div>
                     <div className="flex flex-col gap-2">
                       <label className={modalLabelClass}>Last Name</label>
-                      <input type="text" className={modalInputClass} placeholder="Doe" />
+                      <input required type="text" className={modalInputClass} placeholder="Doe" value={advertiseForm.lastName} onChange={(e) => setAdvertiseForm((current) => ({ ...current, lastName: e.target.value }))} />
                     </div>
                   </div>
                   <div className="flex flex-col gap-2">
                     <label className={modalLabelClass}>Email Address</label>
-                    <input type="email" className={modalInputClass} placeholder="john@company.com" />
+                    <input required type="email" className={modalInputClass} placeholder="john@company.com" value={advertiseForm.email} onChange={(e) => setAdvertiseForm((current) => ({ ...current, email: e.target.value }))} />
                   </div>
                   <div className="flex flex-col gap-2">
                     <label className={modalLabelClass}>Social Media Handle</label>
-                    <input type="text" className={modalInputClass} placeholder="@yourbrand" />
+                    <input required type="text" className={modalInputClass} placeholder="@yourbrand" value={advertiseForm.socialHandle} onChange={(e) => setAdvertiseForm((current) => ({ ...current, socialHandle: e.target.value }))} />
                   </div>
                   <div className="flex flex-col gap-2">
                     <label className={modalLabelClass}>Company / Brand</label>
-                    <input type="text" className={modalInputClass} placeholder="Your Brand Name" />
+                    <input required type="text" className={modalInputClass} placeholder="Your Brand Name" value={advertiseForm.company} onChange={(e) => setAdvertiseForm((current) => ({ ...current, company: e.target.value }))} />
                   </div>
                   <div className="flex flex-col gap-2">
                     <label className={modalLabelClass}>Message / Goals</label>
-                    <textarea className={`${modalInputClass} min-h-[120px]`} placeholder="Tell us about your advertising goals..."></textarea>
+                    <textarea required className={`${modalInputClass} min-h-[120px]`} placeholder="Tell us about your advertising goals..." value={advertiseForm.message} onChange={(e) => setAdvertiseForm((current) => ({ ...current, message: e.target.value }))}></textarea>
                   </div>
-                  <button type="button" onClick={(e) => { e.preventDefault(); setShowAdvertiseForm(false); }} className="c3-btn-gold mt-4 w-full md:w-auto self-end">
-                    <span>Submit Request</span>
+                  <Turnstile action="advertise" onVerify={setAdvertiseCaptcha} onExpire={() => setAdvertiseCaptcha('')} />
+                  {advertiseStatus && <p className="text-sm font-semibold text-red-700">{advertiseStatus}</p>}
+                  <button type="submit" disabled={submittingForm === 'advertise'} className="c3-btn-gold mt-4 w-full md:w-auto self-end disabled:cursor-not-allowed disabled:opacity-60">
+                    <span>{submittingForm === 'advertise' ? 'Submitting...' : 'Submit Request'}</span>
                   </button>
                 </form>
               </div>
@@ -621,7 +696,7 @@ export default function PricingSection() {
             >
               <div className="max-w-2xl mx-auto p-4 sm:p-5 md:p-10">
                 <div className="flex justify-between items-center gap-2 sm:gap-3 mb-5 md:mb-8">
-                  <h3 className={modalHeadingClass}>Collab With Producer Ujay</h3>
+                  <h3 className={modalHeadingClass}>{connect.modals.collabHeading}</h3>
                   <button onClick={() => setShowConnectForm(false)} aria-label="Close collab form" className="shrink-0 p-1.5 md:p-2 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-950 transition-colors">
                     <X className="w-5 h-5 md:w-6 md:h-6" />
                   </button>
@@ -629,22 +704,22 @@ export default function PricingSection() {
                 <div className="mb-6 md:mb-8">
                   <PopupVideo src={collabVideoUrl} title="Collab with Producer Ujay video" />
                 </div>
-                <form className="flex flex-col gap-4 md:gap-5">
+                <form className="flex flex-col gap-4 md:gap-5" onSubmit={(e) => { e.preventDefault(); submitForm('collab'); }}>
                   <div className="flex flex-col gap-2">
                     <label className={modalLabelClass}>Name</label>
-                    <input type="text" className={modalInputClass} placeholder="Your Name" />
+                    <input required type="text" className={modalInputClass} placeholder="Your Name" value={collabForm.name} onChange={(e) => setCollabForm((current) => ({ ...current, name: e.target.value }))} />
                   </div>
                   <div className="flex flex-col gap-2">
                     <label className={modalLabelClass}>Email Address</label>
-                    <input type="email" className={modalInputClass} placeholder="you@example.com" />
+                    <input required type="email" className={modalInputClass} placeholder="you@example.com" value={collabForm.email} onChange={(e) => setCollabForm((current) => ({ ...current, email: e.target.value }))} />
                   </div>
                   <div className="flex flex-col gap-2">
                     <label className={modalLabelClass}>Social Media Handle</label>
-                    <input type="text" className={modalInputClass} placeholder="@yourhandle" />
+                    <input required type="text" className={modalInputClass} placeholder="@yourhandle" value={collabForm.socialHandle} onChange={(e) => setCollabForm((current) => ({ ...current, socialHandle: e.target.value }))} />
                   </div>
                   <div className="flex flex-col gap-2">
                     <label className={modalLabelClass}>Type of Collaboration</label>
-                    <select className={`${modalInputClass} appearance-none`}>
+                    <select required className={`${modalInputClass} appearance-none`} value={collabForm.collaborationType} onChange={(e) => setCollabForm((current) => ({ ...current, collaborationType: e.target.value }))}>
                       <option value="content">Content Creation</option>
                       <option value="sponsorship">Sponsorship</option>
                       <option value="event">Event / Speaking</option>
@@ -653,10 +728,12 @@ export default function PricingSection() {
                   </div>
                   <div className="flex flex-col gap-2">
                     <label className={modalLabelClass}>Collaboration Details</label>
-                    <textarea className={`${modalInputClass} min-h-[120px]`} placeholder="Tell us how you want to collaborate..."></textarea>
+                    <textarea required className={`${modalInputClass} min-h-[120px]`} placeholder="Tell us how you want to collaborate..." value={collabForm.details} onChange={(e) => setCollabForm((current) => ({ ...current, details: e.target.value }))}></textarea>
                   </div>
-                  <button type="button" onClick={(e) => { e.preventDefault(); setShowConnectForm(false); }} className="c3-btn-gold mt-4 w-full md:w-auto self-end">
-                    <span>Send Proposal</span>
+                  <Turnstile action="collab" onVerify={setCollabCaptcha} onExpire={() => setCollabCaptcha('')} />
+                  {collabStatus && <p className="text-sm font-semibold text-red-700">{collabStatus}</p>}
+                  <button type="submit" disabled={submittingForm === 'collab'} className="c3-btn-gold mt-4 w-full md:w-auto self-end disabled:cursor-not-allowed disabled:opacity-60">
+                    <span>{submittingForm === 'collab' ? 'Submitting...' : 'Send Proposal'}</span>
                   </button>
                 </form>
               </div>
