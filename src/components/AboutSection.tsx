@@ -69,7 +69,7 @@ function HighlightedText({ text }: { text: string }) {
             key={`${part}-${index}`}
             className="about-highlight"
             initial={shouldReduceMotion ? false : { backgroundSize: "0% 100%", color: "rgba(255,255,255,0.78)" }}
-            whileInView={shouldReduceMotion ? undefined : { backgroundSize: "100% 100%", color: "rgba(255,255,255,1)" }}
+            whileInView={shouldReduceMotion ? undefined : { backgroundSize: "100% 100%", color: "rgba(10,10,10,1)" }}
             viewport={{ once: false, amount: 0.8 }}
             transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1], delay }}
           >
