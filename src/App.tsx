@@ -5,6 +5,7 @@
 
 import { useState } from 'react';
 import { AnimatePresence } from 'motion/react';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import Header from './components/Header';
 import HeroSection from './components/HeroSection';
 import AboutSection from './components/AboutSection';
@@ -40,6 +41,7 @@ export default function App() {
         <Footer />
         <BackToTopButton />
       </div>
+      <SpeedInsights />
     </>
   );
 }
