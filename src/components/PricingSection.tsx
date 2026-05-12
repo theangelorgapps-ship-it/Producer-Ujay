@@ -330,6 +330,23 @@ export default function PricingSection() {
           transform: translateY(-1px);
           box-shadow: inset 0 1px 2px rgba(255,255,255,0.78), inset 0 -1px 2px rgba(0,0,0,0.4);
         }
+        .c3-section .c3-primary-cta-glow {
+          border-color: rgba(164, 244, 253, 0.95);
+          box-shadow:
+            inset 0 1px 3px rgba(255,255,255,0.92),
+            inset 0 -1px 3px rgba(0,0,0,0.5),
+            0 0 0 1px rgba(164, 244, 253, 0.48),
+            0 0 28px rgba(164, 244, 253, 0.42),
+            0 0 56px rgba(212, 175, 55, 0.32);
+        }
+        .c3-section .c3-primary-cta-glow:hover {
+          box-shadow:
+            inset 0 1px 3px rgba(255,255,255,0.96),
+            inset 0 -1px 3px rgba(0,0,0,0.5),
+            0 0 0 1px rgba(164, 244, 253, 0.7),
+            0 0 36px rgba(164, 244, 253, 0.58),
+            0 0 70px rgba(212, 175, 55, 0.38);
+        }
         .c3-card-content {
           position: relative;
           z-index: 1;
@@ -604,7 +621,7 @@ export default function PricingSection() {
       </div>
 
       <div className="mt-12 md:mt-16 z-10 relative flex justify-center pb-16 md:pb-20">
-        <button onClick={() => setShowConnectForm(true)} className="c3-btn-gold-large shadow-[0_0_40px_rgba(212,175,55,0.4)]"><span>{connect.primaryCta}</span></button>
+        <button onClick={() => setShowConnectForm(true)} className="c3-btn-gold-large c3-primary-cta-glow"><span>{connect.primaryCta}</span></button>
       </div>
 
       {modalRoot && createPortal(

@@ -29,6 +29,18 @@
     top: 0;
   }
 
+  .about-highlight {
+    display: inline;
+    padding: 0 0.05em;
+    border-radius: 0.18em;
+    background-image: linear-gradient(90deg, rgba(164, 244, 253, 0.18), rgba(212, 175, 55, 0.22));
+    background-repeat: no-repeat;
+    background-position: 0 88%;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+    text-shadow: 0 0 18px rgba(164, 244, 253, 0.16);
+  }
+
   .c3-btn-gold, .c3-btn-gold-large {
     background: linear-gradient(135deg, 
       #e5b955 0%, 
@@ -108,6 +120,40 @@
     border-bottom-color: #fff9e6;
     border-right-color: #fff9e6;
     box-shadow: inset 0 2px 5px rgba(0,0,0,0.6), 0 2px 5px rgba(0,0,0,0.4);
+  }
+
+  .c3-primary-cta-glow {
+    border-color: rgba(164, 244, 253, 0.95);
+    box-shadow:
+      inset 0 1px 3px rgba(255,255,255,0.92),
+      inset 0 -1px 3px rgba(0,0,0,0.5),
+      0 0 0 1px rgba(164, 244, 253, 0.48),
+      0 0 28px rgba(164, 244, 253, 0.42),
+      0 0 56px rgba(212, 175, 55, 0.32);
+  }
+
+  .c3-primary-cta-glow::before {
+    content: "";
+    position: absolute;
+    inset: -5px;
+    border-radius: 20px;
+    border: 1px solid rgba(164, 244, 253, 0.72);
+    opacity: 0.9;
+    pointer-events: none;
+    animation: ctaGlowPulse 2.3s ease-in-out infinite;
+  }
+
+  @keyframes ctaGlowPulse {
+    0%, 100% {
+      opacity: 0.42;
+      transform: scale(0.985);
+      box-shadow: 0 0 14px rgba(164, 244, 253, 0.28);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1.02);
+      box-shadow: 0 0 30px rgba(164, 244, 253, 0.54);
+    }
   }
 
   @keyframes shine {

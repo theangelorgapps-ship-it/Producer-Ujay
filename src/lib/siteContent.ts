@@ -72,14 +72,15 @@ export const defaultSiteContent: SiteContent = {
   },
   connect: {
     stats: {
-      title: '8M+ Interactions Gained Organically',
-      subtitle: 'Powered by Producer Ujay.',
+      title: '80M+ Views Gained Organically',
+      subtitle:
+        'Built across interviews, luxury storytelling, and business content that keeps audiences watching. Producer Ujay turns attention into credibility, reach, and momentum for brands.',
       bars: [
-        { platform: 'linkedin', value: '8K+', height: 30 },
-        { platform: 'tiktok', value: '65K+', height: 75 },
-        { platform: 'instagram', value: '135K+', height: 60 },
-        { platform: 'youtube', value: '110K+', height: 90 },
-        { platform: 'x', value: '50K+', height: 45 },
+        { platform: 'linkedin', value: '2M+', height: 30 },
+        { platform: 'tiktok', value: '10M+', height: 75 },
+        { platform: 'instagram', value: '50M+', height: 60 },
+        { platform: 'youtube', value: '10M+', height: 90 },
+        { platform: 'x', value: '8M+', height: 45 },
       ],
     },
     cards: [
@@ -87,7 +88,7 @@ export const defaultSiteContent: SiteContent = {
         kind: 'collab',
         title: 'Collab With Producer Ujay',
         description:
-          'Bring your brand into the room where ambition meets influence. Build the kind of partnership people remember.',
+          'Put your brand beside content built for reach, credibility, and high-intent attention. Collaborate on campaigns that turn views into recognition, trust, and measurable demand.',
         buttonLabel: 'Collab',
         image: {
           alt: 'Collab with Producer Ujay',

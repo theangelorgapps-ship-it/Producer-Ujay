@@ -1,6 +1,5 @@
-import { useRef, useState, useEffect, type ReactNode } from "react";
+import { useRef, useState, type ReactNode } from "react";
 import { motion, useInView, useReducedMotion } from "motion/react";
-import { Youtube, Instagram, Twitter, Linkedin } from "lucide-react";
 import { useSiteContent } from "../hooks/useSiteContent";
 
 function TextReveal({ children, delay = 0 }: { children: ReactNode, delay?: number }) {
@@ -19,69 +18,66 @@ function TextReveal({ children, delay = 0 }: { children: ReactNode, delay?: numb
   );
 }
 
-// Simulated web scraping function for producer ujay's socials
-async function scrapeSocialStats() {
-  // In a real scenario, this would use a backend to scrape these platforms across the internet.
-  // Because client-side scraping is blocked by CORS, we return estimated metrics.
-  return [
-    { platform: "YouTube", count: "110K", url: "https://www.youtube.com/@ProducerUj" },
-    { platform: "Instagram", count: "135K", url: "https://instagram.com/producerujay" },
-    { platform: "TikTok", count: "65K", url: "https://www.tiktok.com/@producerujay" },
-  ];
-}
+const highlightPhrases = [
+  "British entrepreneur",
+  "media personality",
+  "digital educator",
+  "exposure",
+  "ambition",
+  "entrepreneurship",
+  "don't hate, take notes",
+  "valuable assets",
+  "First Class",
+  "Economy",
+  "greatness",
+  "wealth",
+  "success",
+  "self-made entrepreneurs",
+  "vision into reality",
+  "11 years old",
+  "media",
+  "technology",
+  "real estate",
+  "hospitality",
+  "Pink Marble Studios",
+  "Monopoly Millionaire",
+  "Digital Martyr",
+  "PlutoCat",
+  "property portfolio",
+  "Beethoven Hotel",
+  "Black Gold H2O",
+].sort((a, b) => b.length - a.length);
 
-function SocialStats() {
-  const [stats, setStats] = useState<any[]>([]);
+const highlightRegex = new RegExp(`(${highlightPhrases.map((phrase) => phrase.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|")})`, "gi");
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const lastFetchDate = localStorage.getItem("ujay_socials_last_fetch_v2");
-      const cachedData = localStorage.getItem("ujay_socials_data_v2");
-      const threeDaysMs = 3 * 24 * 60 * 60 * 1000;
-      
-      // Auto-update logic: if cached date exists and is within 3 days, use it. Otherwise, refetch.
-      if (lastFetchDate && cachedData && (Date.now() - parseInt(lastFetchDate, 10) < threeDaysMs)) {
-        setStats(JSON.parse(cachedData));
-      } else {
-        const data = await scrapeSocialStats();
-        localStorage.setItem("ujay_socials_data_v2", JSON.stringify(data));
-        localStorage.setItem("ujay_socials_last_fetch_v2", Date.now().toString());
-        setStats(data);
-      }
-    };
-    fetchData();
-  }, []);
-
-  const getIcon = (platform: string) => {
-    if (platform === "YouTube") return <Youtube className="w-6 h-6 text-white transition-colors" />;
-    if (platform === "Instagram") return <Instagram className="w-6 h-6 text-white transition-colors" />;
-    if (platform === "TikTok") return (
-      <svg 
-        className="w-6 h-6 text-white transition-colors fill-current" 
-        viewBox="0 0 24 24"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.56-.5 3.11-1.35 4.45-1.01 1.62-2.65 2.79-4.51 3.2-1.9.43-3.95.27-5.71-.56-1.74-.82-3.13-2.22-3.87-3.95-.73-1.71-.91-3.69-.43-5.46.46-1.74 1.63-3.23 3.17-4.14 1.57-.93 3.45-1.22 5.25-.94.02 1.34-.01 2.68.02 4.02-1.12-.2-2.31-.02-3.27.56-.91.56-1.54 1.48-1.74 2.53-.22 1.11.02 2.3.69 3.16.66.86 1.74 1.34 2.83 1.37 1.1.03 2.2-.38 3.01-1.1.75-.68 1.25-1.62 1.35-2.64.09-3.91.07-7.82.07-11.73-.01-1.8.01-3.6-.02-5.4z" />
-      </svg>
-    );
-    return null;
-  }
+function HighlightedText({ text }: { text: string }) {
+  const shouldReduceMotion = useReducedMotion();
+  const parts = text.split(highlightRegex).filter(Boolean);
+  let highlightIndex = 0;
 
   return (
-    <div className="flex flex-row flex-wrap items-center gap-6 md:gap-8 mt-6">
-      {stats.map((stat, idx) => (
-        <a 
-          key={idx} 
-          href={stat.url} 
-          target="_blank" 
-          rel="noopener noreferrer"
-          className="flex flex-col items-center gap-2 group cursor-pointer"
-        >
-          {getIcon(stat.platform)}
-          <span className="text-white font-sans text-sm tracking-wide group-hover:text-gray-300 transition-colors">{stat.count}</span>
-        </a>
-      ))}
-    </div>
+    <>
+      {parts.map((part, index) => {
+        const isHighlight = highlightPhrases.some((phrase) => phrase.toLowerCase() === part.toLowerCase());
+        if (!isHighlight) return <span key={`${part}-${index}`}>{part}</span>;
+
+        const delay = Math.min(highlightIndex * 0.045, 0.36);
+        highlightIndex += 1;
+
+        return (
+          <motion.span
+            key={`${part}-${index}`}
+            className="about-highlight"
+            initial={shouldReduceMotion ? false : { backgroundSize: "0% 100%", color: "rgba(255,255,255,0.78)" }}
+            whileInView={shouldReduceMotion ? undefined : { backgroundSize: "100% 100%", color: "rgba(255,255,255,1)" }}
+            viewport={{ once: false, amount: 0.8 }}
+            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1], delay }}
+          >
+            {part}
+          </motion.span>
+        );
+      })}
+    </>
   );
 }
 
@@ -160,7 +156,7 @@ export default function AboutSection() {
           <div className="text-gray-100 text-base md:text-[1.15rem] leading-[1.7] md:leading-[1.8] font-normal tracking-wide space-y-5 md:space-y-6">
             <TextReveal delay={0.1}>
               <p>
-                {about.intro}
+                <HighlightedText text={about.intro} />
               </p>
             </TextReveal>
 
@@ -183,7 +179,9 @@ export default function AboutSection() {
                 className="space-y-6 overflow-hidden"
               >
                 {about.body.map((paragraph) => (
-                  <p key={paragraph}>{paragraph}</p>
+                  <p key={paragraph}>
+                    <HighlightedText text={paragraph} />
+                  </p>
                 ))}
 
                 <motion.button 
@@ -203,19 +201,16 @@ export default function AboutSection() {
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 1, delay: 0.5 }}
-            className="pt-8 md:pt-10 flex flex-col items-start gap-4"
+            className="pt-8 md:pt-10 flex flex-col items-center md:items-start gap-4"
           >
             {/* Logo Below the Text */}
-            <div className="flex items-center -ml-2 mb-2">
+            <div className="flex w-full items-center justify-center md:justify-start md:-ml-2 mb-2">
               <img 
                 src="https://assets.cdn.filesafe.space/uUwEUa6rp4Gx1NEi2KiM/media/69fba3434ef91f2f59351fb8.png" 
                 alt="PU Logo" 
                 className="w-36 md:w-48 h-auto object-contain opacity-90 sepia-[.2]" 
               />
             </div>
-            
-            {/* Horizontally listed Socials & Follower Count */}
-            <SocialStats />
           </motion.div>
         </motion.div>
 
