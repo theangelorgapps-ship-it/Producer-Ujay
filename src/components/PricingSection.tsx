@@ -6,7 +6,37 @@ import { siteContent } from '../lib/siteContent';
 
 const advertiseVideoUrl = 'https://assets.cdn.filesafe.space/uUwEUa6rp4Gx1NEi2KiM/media/69fead25a7b9e0385a1a1053.mp4';
 const collabVideoUrl = 'https://assets.cdn.filesafe.space/uUwEUa6rp4Gx1NEi2KiM/media/69feaeeea3dd25aa2abc9256.mp4';
+const leadConnectorScriptId = 'leadconnector-form-embed-script';
+const leadConnectorScriptUrl = 'https://link.msgsndr.com/js/form_embed.js';
+const leadConnectorFormUrls = [
+  'https://api.leadconnectorhq.com/widget/form/uteitrfUjzkC1H9W9y8L',
+  'https://api.leadconnectorhq.com/widget/form/Yjra8JFHwosBJ2LXgpOZ',
+];
 const modalHeadingClass = 'font-display text-[clamp(1.15rem,5vw,2rem)] italic font-normal leading-none text-black whitespace-nowrap';
+
+function warmLeadConnectorForms() {
+  if (typeof document === 'undefined') return;
+
+  if (!document.getElementById(leadConnectorScriptId)) {
+    const script = document.createElement('script');
+    script.id = leadConnectorScriptId;
+    script.src = leadConnectorScriptUrl;
+    script.async = true;
+    document.body.appendChild(script);
+  }
+
+  leadConnectorFormUrls.forEach((href) => {
+    const existing = document.querySelector(`link[data-leadconnector-prefetch="${href}"]`);
+    if (existing) return;
+
+    const link = document.createElement('link');
+    link.rel = 'prefetch';
+    link.as = 'document';
+    link.href = href;
+    link.setAttribute('data-leadconnector-prefetch', href);
+    document.head.appendChild(link);
+  });
+}
 
 function PopupVideo({ src, title }: { src: string; title: string }) {
   const [muted, setMuted] = useState(true);
@@ -20,6 +50,7 @@ function PopupVideo({ src, title }: { src: string; title: string }) {
         muted={muted}
         loop
         playsInline
+        preload="metadata"
         className="aspect-video w-full bg-black object-cover"
       />
       <button
@@ -46,14 +77,7 @@ function LeadConnectorForm({
   const iframeId = `inline-${formId}`;
 
   useEffect(() => {
-    const scriptId = 'leadconnector-form-embed-script';
-    if (document.getElementById(scriptId)) return;
-
-    const script = document.createElement('script');
-    script.id = scriptId;
-    script.src = 'https://link.msgsndr.com/js/form_embed.js';
-    script.async = true;
-    document.body.appendChild(script);
+    warmLeadConnectorForms();
   }, []);
 
   return (
@@ -95,6 +119,10 @@ export default function PricingSection() {
   const collabCard = cardsByKind.collab;
   const advertiseCard = cardsByKind.advertise;
   const communityCard = cardsByKind.community;
+
+  useEffect(() => {
+    warmLeadConnectorForms();
+  }, []);
   
   return (
     <section id="connect" className="c3-section relative w-full overflow-hidden min-h-screen flex flex-col items-center py-8 md:py-[40px] px-4 md:px-[20px]">
