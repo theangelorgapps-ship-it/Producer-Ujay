@@ -95,31 +95,93 @@ export default function PricingSection() {
           transform: translateZ(0);
         }
         .c3-card {
-          background: linear-gradient(145deg, rgba(8,8,8,0.96), rgba(0,0,0,0.92));
-          border: 1px solid #808080;
+          background: #050505;
+          border: 1px solid rgba(255, 255, 255, 0.34);
           border-radius: 28px;
           padding: 50px 24px;
           min-height: 620px;
           height: 100%;
           transform: translateZ(0);
-          transition: border-color 0.2s ease, box-shadow 0.2s ease;
+          transition: border-color 0.18s ease;
           position: relative;
           display: flex;
           flex-direction: column;
           overflow: hidden;
           min-width: 0;
+          backface-visibility: hidden;
         }
         .c3-card::before {
           content: "";
           position: absolute;
           top: 0; left: 0; right: 0; bottom: 0;
-          background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 50%);
+          background: linear-gradient(180deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0) 42%);
           pointer-events: none;
           z-index: 0;
         }
         .c3-card:hover {
           border-color: rgba(212, 175, 55, 0.7);
-          box-shadow: 0 0 0 1px rgba(212, 175, 55, 0.14);
+        }
+        .c3-stats-orbits {
+          position: absolute;
+          inset: 0;
+          pointer-events: none;
+          background:
+            radial-gradient(circle at 50% 12%, rgba(212,175,55,0.18) 0 1px, transparent 2px 19%),
+            radial-gradient(circle at 50% 12%, rgba(212,175,55,0.13) 0 1px, transparent 2px 31%),
+            radial-gradient(circle at 50% 12%, rgba(212,175,55,0.08) 0 1px, transparent 2px 43%);
+        }
+        .c3-stats-chart {
+          flex: 0 0 340px;
+          min-height: 340px;
+          display: flex;
+          align-items: flex-end;
+          justify-content: center;
+          gap: 12px;
+          padding: 72px 24px 22px;
+          position: relative;
+          z-index: 1;
+        }
+        .c3-stat-col {
+          flex: 1 1 0;
+          min-width: 0;
+          height: 100%;
+          display: flex;
+          align-items: flex-end;
+          justify-content: center;
+          position: relative;
+        }
+        .c3-stat-icon {
+          position: absolute;
+          top: -42px;
+          left: 50%;
+          transform: translateX(-50%);
+          display: inline-flex;
+          width: 34px;
+          height: 34px;
+          align-items: center;
+          justify-content: center;
+          border-radius: 9px;
+          border: 1px solid rgba(255,255,255,0.16);
+          background: #070707;
+        }
+        .c3-stat-icon-light { background: #f5f7fb; color: #070707; }
+        .c3-stat-icon-instagram { background: linear-gradient(135deg, #f7c43a, #e43c5c 50%, #7b4dff); }
+        .c3-stat-icon-youtube { background: #dc2626; }
+        .c3-stat-bar {
+          width: 100%;
+          border: 1px solid rgba(212,175,55,0.46);
+          border-bottom: 0;
+          border-radius: 12px 12px 0 0;
+          background: linear-gradient(180deg, rgba(145,125,49,0.74), rgba(8,22,33,0.3));
+          display: flex;
+          align-items: flex-start;
+          justify-content: center;
+          padding-top: 16px;
+        }
+        .c3-stat-bar span {
+          color: rgba(255,255,255,0.92);
+          font-size: 0.75rem;
+          font-weight: 800;
         }
         .c3-card-media {
           height: 310px;
@@ -163,6 +225,20 @@ export default function PricingSection() {
           align-items: center;
           justify-content: center;
           text-align: center;
+        }
+        .c3-section .c3-btn-gold,
+        .c3-section .c3-btn-gold-large {
+          transition: transform 0.16s ease, border-color 0.16s ease;
+          box-shadow: inset 0 1px 2px rgba(255,255,255,0.72), inset 0 -1px 2px rgba(0,0,0,0.36);
+        }
+        .c3-section .c3-btn-gold::after,
+        .c3-section .c3-btn-gold-large::after {
+          display: none;
+        }
+        .c3-section .c3-btn-gold:hover,
+        .c3-section .c3-btn-gold-large:hover {
+          transform: translateY(-1px);
+          box-shadow: inset 0 1px 2px rgba(255,255,255,0.78), inset 0 -1px 2px rgba(0,0,0,0.4);
         }
         .c3-card-content {
           position: relative;
@@ -294,6 +370,10 @@ export default function PricingSection() {
             gap: 20px;
           }
           .c3-card { min-height: 560px; }
+          .c3-stats-chart {
+            flex-basis: 320px;
+            min-height: 320px;
+          }
           .c3-card-media {
             height: 300px;
             flex-basis: 300px;
@@ -323,6 +403,20 @@ export default function PricingSection() {
             min-height: 560px;
             border-radius: 22px;
           }
+          .c3-stats-chart {
+            flex-basis: 300px;
+            min-height: 300px;
+            gap: 8px;
+            padding: 66px 16px 18px;
+          }
+          .c3-stat-icon {
+            width: 32px;
+            height: 32px;
+            top: -40px;
+          }
+          .c3-stat-bar span {
+            font-size: 0.68rem;
+          }
           .c3-card-media {
             height: 280px;
             flex-basis: 280px;
@@ -345,62 +439,46 @@ export default function PricingSection() {
       <div className="c3-grid">
         {/* Card 1 */}
         <div className="c3-card relative overflow-hidden" style={{ padding: '0', display: 'flex', flexDirection: 'column' }}>
-          {/* Gold circular background lines */}
-          <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(circle at 50% 30%, rgba(212,175,55,0.08) 0%, transparent 70%)' }}>
-            <div className="absolute top-[-30%] left-[10%] w-[80%] aspect-square rounded-full border border-[rgba(212,175,55,0.1)]"></div>
-            <div className="absolute top-[-20%] left-[20%] w-[60%] aspect-square rounded-full border border-[rgba(212,175,55,0.15)]"></div>
-            <div className="absolute top-[-10%] left-[30%] w-[40%] aspect-square rounded-full border border-[rgba(212,175,55,0.2)]"></div>
-          </div>
-
-          <div className="flex-1 w-full flex items-end justify-center px-4 md:px-6 pt-14 md:pt-16 pb-4 relative z-10 gap-2 md:gap-3 min-h-[280px] md:min-h-[340px]">
+          <div className="c3-stats-orbits" />
+          <div className="c3-stats-chart">
             {/* Pillar 1: LinkedIn */}
-            <div className="flex flex-col items-center justify-end h-full w-full relative">
-              <div className="absolute top-[-36px] bg-white rounded-md p-1.5 shadow-lg shadow-black/50">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+            <div className="c3-stat-col">
+              <div className="c3-stat-icon c3-stat-icon-light">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
               </div>
-              <div className="w-full bg-gradient-to-b from-[rgba(212,175,55,0.3)] to-transparent rounded-t-xl relative flex justify-center items-start pt-3 h-[30%] border-t border-l border-r border-[#d4af37]/40 backdrop-blur-sm">
-                <span className="text-[0.65rem] md:text-xs text-white/90 font-semibold font-sans">8K+</span>
-              </div>
+              <div className="c3-stat-bar" style={{ height: '30%' }}><span>8K+</span></div>
             </div>
             
             {/* Pillar 2: TikTok */}
-            <div className="flex flex-col items-center justify-end h-full w-full relative">
-              <div className="absolute top-[-36px] bg-black border border-white/20 rounded-md p-1.5 shadow-lg shadow-black/50">
+            <div className="c3-stat-col">
+              <div className="c3-stat-icon">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"></path></svg>
               </div>
-              <div className="w-full bg-gradient-to-b from-[rgba(212,175,55,0.4)] to-transparent rounded-t-xl relative flex justify-center items-start pt-3 h-[75%] border-t border-l border-r border-[#d4af37]/50 backdrop-blur-sm">
-                <span className="text-[0.65rem] md:text-xs text-white/90 font-semibold font-sans">65K+</span>
-              </div>
+              <div className="c3-stat-bar" style={{ height: '75%' }}><span>65K+</span></div>
             </div>
 
             {/* Pillar 3: Instagram */}
-            <div className="flex flex-col items-center justify-end h-full w-full relative">
-              <div className="absolute top-[-36px] bg-gradient-to-tr from-yellow-400 via-red-500 to-purple-500 rounded-md p-1.5 shadow-lg shadow-black/50">
+            <div className="c3-stat-col">
+              <div className="c3-stat-icon c3-stat-icon-instagram">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
               </div>
-              <div className="w-full bg-gradient-to-b from-[rgba(212,175,55,0.35)] to-transparent rounded-t-xl relative flex justify-center items-start pt-3 h-[60%] border-t border-l border-r border-[#d4af37]/40 backdrop-blur-sm">
-                <span className="text-[0.65rem] md:text-xs text-white/90 font-semibold font-sans">135K+</span>
-              </div>
+              <div className="c3-stat-bar" style={{ height: '60%' }}><span>135K+</span></div>
             </div>
 
             {/* Pillar 4: YouTube */}
-            <div className="flex flex-col items-center justify-end h-full w-full relative">
-              <div className="absolute top-[-36px] bg-red-600 rounded-md p-1.5 shadow-lg shadow-black/50">
+            <div className="c3-stat-col">
+              <div className="c3-stat-icon c3-stat-icon-youtube">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33 2.78 2.78 0 0 0 1.94 2c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.33 29 29 0 0 0-.46-5.33z"></path><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"></polygon></svg>
               </div>
-              <div className="w-full bg-gradient-to-b from-[rgba(212,175,55,0.5)] to-transparent rounded-t-xl relative flex justify-center items-start pt-3 h-[90%] border-t border-l border-r border-[#d4af37]/60 backdrop-blur-sm">
-                <span className="text-[0.65rem] md:text-xs text-white pb-3 font-bold font-sans">110K+</span>
-              </div>
+              <div className="c3-stat-bar" style={{ height: '90%' }}><span>110K+</span></div>
             </div>
 
             {/* Pillar 5: X */}
-            <div className="flex flex-col items-center justify-end h-full w-full relative">
-               <div className="absolute top-[-36px] bg-black border border-white/20 rounded-md p-1.5 shadow-lg shadow-black/50">
+            <div className="c3-stat-col">
+               <div className="c3-stat-icon">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4l16 16M4 20L20 4"></path></svg>
               </div>
-              <div className="w-full bg-gradient-to-b from-[rgba(212,175,55,0.25)] to-transparent rounded-t-xl relative flex justify-center items-start pt-3 h-[45%] border-t border-l border-r border-[#d4af37]/40 backdrop-blur-sm">
-                <span className="text-[0.65rem] md:text-xs text-white/90 font-semibold font-sans">50K+</span>
-              </div>
+              <div className="c3-stat-bar" style={{ height: '45%' }}><span>50K+</span></div>
             </div>
           </div>
 
