@@ -14,6 +14,21 @@
 }
 
 @layer components {
+  .about-image-stack-card {
+    position: absolute;
+    width: 60%;
+  }
+
+  .about-image-stack-card-front {
+    left: 2%;
+    top: 9%;
+  }
+
+  .about-image-stack-card-back {
+    left: 38%;
+    top: 0;
+  }
+
   .c3-btn-gold, .c3-btn-gold-large {
     background: linear-gradient(135deg, 
       #e5b955 0%, 

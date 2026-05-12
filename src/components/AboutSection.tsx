@@ -1,6 +1,11 @@
 import { useRef, useState, useEffect, type ReactNode } from "react";
-import { motion, useInView } from "motion/react";
+import { motion, useInView, useReducedMotion } from "motion/react";
 import { Youtube, Instagram, Twitter, Linkedin } from "lucide-react";
+
+const aboutImages = [
+  "https://assets.cdn.filesafe.space/uUwEUa6rp4Gx1NEi2KiM/media/6a026498a2398e6af2e9e107.jpg",
+  "https://assets.cdn.filesafe.space/uUwEUa6rp4Gx1NEi2KiM/media/6a02649860a7a52fdc116001.jpg",
+];
 
 function TextReveal({ children, delay = 0 }: { children: ReactNode, delay?: number }) {
   const ref = useRef(null);
@@ -86,26 +91,64 @@ function SocialStats() {
 
 export default function AboutSection() {
   const [isExpanded, setIsExpanded] = useState(false);
+  const shouldReduceMotion = useReducedMotion();
 
   return (
     <section id="about" className="bg-black text-white py-16 md:py-24 px-5 sm:px-10 lg:px-20 min-h-screen flex items-center relative z-10 w-full overflow-hidden">
-      <div className="max-w-[1400px] mx-auto w-full flex flex-col md:flex-row gap-8 md:gap-12 lg:gap-24 items-center">
+      <div className="max-w-[1400px] mx-auto w-full grid grid-cols-1 md:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] gap-10 md:gap-12 lg:gap-20 items-start">
         
         {/* Left Column - Image */}
-        <div className="w-full max-w-[420px] md:max-w-none md:w-[35%] rounded-[1.5rem] md:rounded-[2rem] overflow-hidden shrink-0 mt-6 md:mt-0">
-          <motion.img 
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true, margin: "-10%" }}
-            transition={{ duration: 1, ease: "easeOut" }}
-            src="https://assets.cdn.filesafe.space/uUwEUa6rp4Gx1NEi2KiM/media/69fd324bfb9074ae036bc76d.jpg" 
-            alt="Producer Ujay"
-            className="w-full aspect-[4/5] max-h-[68vh] md:max-h-none md:aspect-[3/4] object-cover rounded-[1.5rem] md:rounded-[2rem]"
-          />
+        <div className="w-full max-w-[720px] md:max-w-none shrink-0 mt-6 md:mt-0">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-12%" }}
+            whileHover={shouldReduceMotion ? undefined : "hover"}
+            variants={{
+              hidden: {},
+              visible: {
+                transition: { staggerChildren: 0.16 }
+              }
+            }}
+            className="relative mx-auto aspect-[1.08/1] w-full max-w-[620px] sm:aspect-[1.16/1] md:max-w-none"
+          >
+            {aboutImages.map((src, index) => (
+              <motion.div
+                key={src}
+                variants={{
+                  hidden: { opacity: 0, x: index === 0 ? -44 : 44, y: index === 0 ? 24 : -12, scale: 0.92, rotate: index === 0 ? -2.5 : 2.5 },
+                  visible: { opacity: 1, x: 0, y: 0, scale: 1 },
+                  hover: { x: index === 0 ? -34 : 34, y: index === 0 ? 10 : -8, scale: 1.015 }
+                }}
+                transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
+                className={`about-image-stack-card group overflow-hidden rounded-[1.35rem] md:rounded-[2rem] shadow-[0_28px_80px_rgba(0,0,0,0.35)] will-change-transform ${
+                  index === 0 ? "about-image-stack-card-front z-20" : "about-image-stack-card-back z-10"
+                }`}
+              >
+                <motion.img
+                  src={src}
+                  alt={index === 0 ? "Producer Ujay" : "Producer Ujay portrait"}
+                  animate={shouldReduceMotion ? undefined : { y: index === 0 ? [0, -7, 0] : [0, 7, 0] }}
+                  whileHover={shouldReduceMotion ? undefined : { scale: 1.055 }}
+                  transition={{
+                    y: { duration: 5.5, repeat: Infinity, ease: "easeInOut", delay: index === 0 ? 0 : 0.35 },
+                    scale: { duration: 0.45, ease: [0.22, 1, 0.36, 1] }
+                  }}
+                  className="w-full aspect-[3/4] object-cover object-top"
+                />
+              </motion.div>
+            ))}
+          </motion.div>
         </div>
 
         {/* Right Column - Content */}
-        <div className="w-full md:w-[55%] flex flex-col justify-center">
+        <motion.div
+          initial={{ opacity: 0, x: shouldReduceMotion ? 0 : 28 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true, margin: "-12%" }}
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          className="w-full flex flex-col justify-center"
+        >
           <motion.h2 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -119,18 +162,20 @@ export default function AboutSection() {
           <div className="text-gray-100 text-base md:text-[1.15rem] leading-[1.7] md:leading-[1.8] font-normal tracking-wide space-y-5 md:space-y-6">
             <TextReveal delay={0.1}>
               <p>
-                Producer Ujay is a remarkable young entrepreneur and YouTube creator on a mission to inspire minds globally. By interviewing the world’s most accomplished millionaires and building a multi-faceted empire including PlutoCat and Influencer Hub, Ujay provides the blueprint for the next generation to win faster and at scale.
+                Producer UJAY is a British entrepreneur, investor, media personality, and digital educator focused on inspiring a new generation through exposure, ambition, and entrepreneurship. Built around the belief that those who say it cannot be done should get out of the way of those who are doing it, UJAY has become known for documenting success, luxury, and business in a way that motivates others to think beyond their limitations. His message is simple: don&apos;t hate, take notes.
               </p>
             </TextReveal>
 
             {!isExpanded ? (
               <TextReveal delay={0.2}>
-                <button 
+                <motion.button 
                   onClick={() => setIsExpanded(true)}
+                  whileHover={shouldReduceMotion ? undefined : { scale: 1.03, x: 4 }}
+                  whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
                   className="text-gray-500 hover:text-white transition-colors duration-300 text-sm tracking-wide uppercase mt-2 mb-8 focus:outline-none"
                 >
                   Read more
-                </button>
+                </motion.button>
               </TextReveal>
             ) : (
               <motion.div 
@@ -140,21 +185,32 @@ export default function AboutSection() {
                 className="space-y-6 overflow-hidden"
               >
                 <p>
-                  From a tender age, Ujay demonstrated his entrepreneurial prowess, founding his first business at the astonishing age of 11. Leveraging his keen eye for fashion and impeccable taste, he cleverly established an eBay venture, offering trendy second-hand clothing to a growing customer base. This early success served as a springboard for his future endeavors.
+                  UJAY believes exposure is one of the most valuable assets a person can receive. As he often says, there is a reason why on an Emirates flight you walk through First Class before reaching Economy. Exposure changes perspective. When people see greatness, wealth, and success up close, they begin to believe it is possible for them too. Through his content, interviews, and businesses, UJAY&apos;s mission is to expose people to worlds they once believed were unreachable and show how self-made entrepreneurs turned vision into reality.
                 </p>
                 <p>
-                  Building upon his entrepreneurial spirit, Ujay expanded his portfolio of businesses, with “PlutoCat” his coveted earphone brand, and “Influencer Hub,” a thriving digital billboard influencer promotion business. With these ventures, he has not only conquered the world of consumer electronics but also helped aspiring influencers reach new heights.
+                  From launching his first business at 11 years old to building a growing portfolio across media, technology, real estate, and hospitality, UJAY has developed a modern entrepreneurial ecosystem designed to inspire and educate.
                 </p>
                 <p>
-                  Through his engaging interviews and multifaceted enterprises, Producer Ujay has become a beacon of inspiration for young individuals globally. With unwavering passion, he continues to empower the next generation, encouraging them to pursue their dreams and achieve unimaginable success.
+                  He is the founder of Pink Marble Studios, a media production company specialising in cinematography, photography, and digital advertising, and the creator of Monopoly Millionaire, a business-focused platform where he interviews entrepreneurs and successful business figures.
+                </p>
+                <p>
+                  He also founded Digital Martyr, an advanced online business education platform and private community focused on wealth creation and digital entrepreneurship, alongside PlutoCat, his technology brand specialising in premium audio products and earphones.
+                </p>
+                <p>
+                  Beyond media and technology, UJAY manages a property portfolio of over 100 properties, serves on the board of Beethoven Hotel, Zimbabwe&apos;s first transit hotel, and is a director of the premium water brand Black Gold H2O.
+                </p>
+                <p>
+                  Through his businesses and platforms, Producer UJAY continues to inspire ambitious young people globally to think bigger, move differently, and realise that exposure can change the trajectory of an entire life.
                 </p>
 
-                <button 
+                <motion.button 
                   onClick={() => setIsExpanded(false)}
+                  whileHover={shouldReduceMotion ? undefined : { scale: 1.03, x: 4 }}
+                  whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
                   className="text-gray-500 hover:text-white transition-colors duration-300 text-sm tracking-wide uppercase mt-4 mb-8 focus:outline-none block"
                 >
                   Read less
-                </button>
+                </motion.button>
               </motion.div>
             )}
           </div>
@@ -178,7 +234,7 @@ export default function AboutSection() {
             {/* Horizontally listed Socials & Follower Count */}
             <SocialStats />
           </motion.div>
-        </div>
+        </motion.div>
 
       </div>
     </section>

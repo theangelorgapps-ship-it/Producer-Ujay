@@ -18,7 +18,7 @@ export default function Header() {
         </button>
         <a href="#hero" onClick={(e) => { e.preventDefault(); document.getElementById('hero')?.scrollIntoView({ behavior: 'smooth' }); }} className="px-2.5 md:px-4 py-2 rounded-full hover:bg-white hover:text-black transition-all duration-300 font-medium">Home</a>
         <a href="#about" onClick={(e) => { e.preventDefault(); document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' }); }} className="px-2.5 md:px-4 py-2 rounded-full hover:bg-white hover:text-black transition-all duration-300 font-medium whitespace-nowrap">About Me</a>
-        <a href="#connect" onClick={(e) => { e.preventDefault(); document.getElementById('connect')?.scrollIntoView({ behavior: 'smooth' }); }} className="px-2.5 md:px-4 py-2 rounded-full hover:bg-white hover:text-black transition-all duration-300 font-medium">Connect</a>
+        <a href="#connect" onClick={(e) => { e.preventDefault(); document.getElementById('connect')?.scrollIntoView({ behavior: 'smooth' }); }} className="px-2.5 md:px-4 py-2 rounded-full hover:bg-white hover:text-black transition-all duration-300 font-medium">Collab</a>
       </nav>
     </motion.header>
   );

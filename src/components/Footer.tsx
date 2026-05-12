@@ -1,5 +1,5 @@
 import React from 'react';
-import { Twitter, Instagram, Youtube, MessageCircle } from 'lucide-react';
+import { Instagram, Linkedin, MessageCircle, Youtube } from 'lucide-react';
 import { motion } from 'motion/react';
 
 export default function Footer() {
@@ -33,21 +33,26 @@ export default function Footer() {
           <h4 className="text-white font-medium mb-1 md:mb-2">Navigation</h4>
           <a href="#hero" onClick={(e) => { e.preventDefault(); document.getElementById('hero')?.scrollIntoView({ behavior: 'smooth' }); }} className="text-white/72 hover:text-white transition-colors duration-300 text-sm">Home</a>
           <a href="#about" onClick={(e) => { e.preventDefault(); document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' }); }} className="text-white/72 hover:text-white transition-colors duration-300 text-sm">About Me</a>
-          <a href="#connect" onClick={(e) => { e.preventDefault(); document.getElementById('connect')?.scrollIntoView({ behavior: 'smooth' }); }} className="text-white/72 hover:text-white transition-colors duration-300 text-sm">Connect</a>
+          <a href="#connect" onClick={(e) => { e.preventDefault(); document.getElementById('connect')?.scrollIntoView({ behavior: 'smooth' }); }} className="text-white/72 hover:text-white transition-colors duration-300 text-sm">Collab</a>
         </div>
 
         {/* Socials */}
         <div className="flex flex-col gap-4 items-center md:items-start">
           <h4 className="text-white font-medium mb-1 md:mb-2">Follow Us</h4>
           <div className="flex gap-5">
-            <a href="#" className="text-white/72 hover:text-white transition-colors duration-300" aria-label="Twitter">
-              <Twitter className="w-5 h-5" />
+            <a href="#" className="text-white/72 hover:text-white transition-colors duration-300" aria-label="X">
+              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M4 4l16 16M4 20L20 4" />
+              </svg>
             </a>
             <a href="#" className="text-white/72 hover:text-white transition-colors duration-300" aria-label="Instagram">
               <Instagram className="w-5 h-5" />
             </a>
             <a href="#" className="text-white/72 hover:text-white transition-colors duration-300" aria-label="YouTube">
               <Youtube className="w-5 h-5" />
+            </a>
+            <a href="#" className="text-white/72 hover:text-white transition-colors duration-300" aria-label="LinkedIn">
+              <Linkedin className="w-5 h-5" />
             </a>
             <a href="#" className="text-white/72 hover:text-white transition-colors duration-300" aria-label="Discord">
               <MessageCircle className="w-5 h-5" />
